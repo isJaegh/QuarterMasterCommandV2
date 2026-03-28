@@ -2,7 +2,7 @@
 // QUARTERMASTER COMMAND - SERVICE WORKER
 // ============================================================================
 
-const CACHE_NAME = 'qm-cache-v7'; // Bumped version to force a cache update
+const CACHE_NAME = 'qm-cache-v8'; // Bumped version to force a cache update
 
 // The exact paths to all the new modular files
 const urlsToCache = [
@@ -14,6 +14,7 @@ const urlsToCache = [
     './js/state/store.js',
     './js/data/data.js',
     './js/data/lang.js',
+    './js/data/helpContent.js',
     './js/core/app.js',
     './js/core/engine.js',
     './js/core/pipeline.js',

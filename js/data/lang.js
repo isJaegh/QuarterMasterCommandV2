@@ -1,4 +1,5 @@
 import { state, saveState } from '../state/store.js';
+import { helpContent } from './helpContent.js';
 
 export const baseItems = {
     granum: "Granum", calx: "Calx", saburra: "Saburra", tephra: "Tephra", bor: "Bor", gabore: "Gabore", kimurite: "Kimurite", lodestone: "Lodestone", risensacrificecarcass: "Risen Sacrifice",
@@ -53,53 +54,7 @@ export const i18n = {
         btnMaxText: "Calculate Max Craftable", maxTitle: "Crafting Limit Reached", maxAcknowledge: "Acknowledge",
         maxCraftAny: "Cannot craft any [item] with your current bank.", maxMissing: "To reach your original target of [target], you are still missing:", maxTotalCraft: "You have enough materials to craft", maxCalculatedGoal: "You have enough to meet or exceed your target.",
         legAcronyms: "Acronyms", legEff: "Efficient", legYld: "Max Yield", legReg: "Region Locked", categories: baseCategories, items: baseItems,
-        helpHtml: `
-            <p>Welcome to the <strong>Quartermaster Command</strong> Help Page. This application is an advanced, offline-capable dashboard designed to simplify complex metallurgy and extraction pipelines in Mortal Online 2.</p>
-            <p>Below you will find a breakdown of every feature and how to utilize it to maximize your refining efficiency.</p>
-            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 20px;">🌟 Key Features & How to Use Them</h3>
-            <h4 style="color:var(--text); margin-bottom: 5px;">1. Pipeline Intelligence & Dynamic Recipe Routing</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>What it does:</strong> Automatically maps out the multi-step extraction, refining, and smelting tasks required for complex metals like Steel, Tungsteel, and Oghmium.</li>
-                <li style="margin-bottom: 6px;"><strong>How to use it:</strong> Select your target metal and quantity. Choose your routing method:
-                    <ul style="margin-top: 4px;">
-                        <li style="margin-bottom: 4px;"><strong>[E] Efficient Path:</strong> Prioritizes recipes with the lowest raw material cost.</li>
-                        <li style="margin-bottom: 4px;"><strong>[Y] Max Yield:</strong> Prioritizes recipes that generate the highest amount of secondary byproducts.</li>
-                        <li style="margin-bottom: 4px;"><strong>[R] Region Locked:</strong> Restricts the calculation to only use machinery available in your specific local region.</li>
-                    </ul>
-                </li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">2. Calculate Max Craftable</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>What it does:</strong> Instantly calculates the absolute maximum amount of a target metal you can produce based <em>strictly</em> on what you currently have in your bags or bank.</li>
-                <li style="margin-bottom: 6px;"><strong>How to use it:</strong> Enter your current on-hand materials into the inventory system, select your target metal, and trigger the calculation.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">3. Smart Market Cart</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>What it does:</strong> Acts as a shopping list and budget tracker for your refining pipelines.</li>
-                <li style="margin-bottom: 6px;"><strong>How to use it:</strong> Input local market prices and desired buy quantities. Use the <strong>Auto-Fill</strong> feature to let the system automatically calculate exactly what materials you are missing. The total gold cost updates dynamically.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">4. Discord Dispatch</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>What it does:</strong> Generates a beautifully formatted Markdown work order—cleanly separating items you need to buy on the Market from items that require Manual Gathering.</li>
-                <li style="margin-bottom: 6px;"><strong>How to use it:</strong> Once your pipeline and cart are ready, trigger the dispatch. Copy the text directly or push it straight to a Discord Webhook.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">5. State Sharing & Export</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>What it does:</strong> Allows you to save your current inventory, shopping cart, and pipeline goals to share with other crafters.</li>
-                <li style="margin-bottom: 6px;"><strong>How to use it:</strong> Click export to generate a short string code to share with guildmates, or choose CSV export to download your data as a spreadsheet.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">6. Deep Customization & Bilingual Support</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Languages:</strong> Toggle between multiple languages at any time from the app settings.</li>
-                <li style="margin-bottom: 6px;"><strong>Customization:</strong> Access settings to toggle Dark/Light modes, adjust accent colors, and hide modules you don't actively need.</li>
-            </ul>
-            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 20px;">🚀 Installation & Offline Setup</h3>
-            <p>Quartermaster Command is a static, client-side application requiring no backend.</p>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Web Browser:</strong> Simply access the hosted URL.</li>
-                <li style="margin-bottom: 6px;"><strong>Mobile / App Install (PWA):</strong> Visit the URL on a supported device and tap "Add to Home Screen" to install it as a native offline app.</li>
-                <li style="margin-bottom: 6px;"><strong>Local Use:</strong> Download the repository files and double-click <code>index.html</code>.</li>
-            </ul>`
+        helpHtml: helpContent['en']
     },
 
     fr: {
@@ -139,53 +94,7 @@ export const i18n = {
             "Raw Materials": "Matières premières", "Basic Extractions": "Extractions de base", "Intermediate Ores": "Minerais intermédiaires", "Advanced Ores": "Minerais avancés", "Catalysts": "Catalyseurs", "Refined Metals": "Métaux raffinés"
         },
         items: baseItems,
-        helpHtml: `
-            <p>Bienvenue sur la page d'aide de <strong>Quartermaster Command</strong>. Cette application est un tableau de bord avancé, fonctionnant hors-ligne, conçu pour simplifier les processus complexes de métallurgie et d'extraction dans Mortal Online 2.</p>
-            <p>Vous trouverez ci-dessous une description détaillée de chaque fonctionnalité et de la manière de l'utiliser pour maximiser l'efficacité de votre raffinage.</p>
-            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 20px;">🌟 Fonctionnalités Principales et Guide d'Utilisation</h3>
-            <h4 style="color:var(--text); margin-bottom: 5px;">1. Intelligence de Pipeline & Routage Dynamique</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Ce que ça fait :</strong> Planifie automatiquement les étapes complexes d'extraction, de raffinage et de fusion requises pour des métaux avancés comme l'Acier, le Tungsteel et l'Oghmium.</li>
-                <li style="margin-bottom: 6px;"><strong>Comment l'utiliser :</strong> Sélectionnez le métal désiré et la quantité. Choisissez votre méthode de routage :
-                    <ul style="margin-top: 4px;">
-                        <li style="margin-bottom: 4px;"><strong>[E] Voie Efficace :</strong> Priorise les recettes avec le coût en matières premières le plus bas.</li>
-                        <li style="margin-bottom: 4px;"><strong>[Y] Rendement Maximum :</strong> Priorise les recettes qui génèrent la plus grande quantité de sous-produits secondaires.</li>
-                        <li style="margin-bottom: 4px;"><strong>[R] Verrouillage Régional :</strong> Restreint le calcul pour utiliser uniquement les machines disponibles dans votre région spécifique.</li>
-                    </ul>
-                </li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">2. Calcul du Maximum Fabricable</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Ce que ça fait :</strong> Calcule instantanément la quantité maximale absolue d'un métal cible que vous pouvez fabriquer en vous basant <em>strictement</em> sur ce que vous avez actuellement dans vos sacs ou votre banque.</li>
-                <li style="margin-bottom: 6px;"><strong>Comment l'utiliser :</strong> Entrez vos matériaux actuels dans le système d'inventaire, sélectionnez votre métal cible et lancez le calcul.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">3. Panier de Marché Intelligent</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Ce que ça fait :</strong> Sert de liste de courses et de suivi budgétaire pour vos pipelines de raffinage.</li>
-                <li style="margin-bottom: 6px;"><strong>Comment l'utiliser :</strong> Saisissez les prix du marché local et les quantités souhaitées. Utilisez <strong>Remplissage Automatique</strong> pour calculer les matériaux manquants. Le coût total en or se met à jour dynamiquement.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">4. Envoi sur Discord (Discord Dispatch)</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Ce que ça fait :</strong> Génère un bon de travail magnifiquement formaté en Markdown, séparant les articles à acheter de ceux nécessitant une récolte manuelle.</li>
-                <li style="margin-bottom: 6px;"><strong>Comment l'utiliser :</strong> Une fois prêt, déclenchez l'envoi pour copier le texte ou le pousser vers un Webhook Discord.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">5. Partage d'État et Exportation</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Ce que ça fait :</strong> Permet de sauvegarder votre inventaire, panier et objectifs pour les partager.</li>
-                <li style="margin-bottom: 6px;"><strong>Comment l'utiliser :</strong> Cliquez sur exporter pour générer un code texte à partager avec votre guilde, ou exportez en CSV.</li>
-            </ul>
-            <h4 style="color:var(--text); margin-bottom: 5px;">6. Personnalisation Avancée et Bilinguisme</h4>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Langues :</strong> Basculez entre plusieurs langues depuis les paramètres.</li>
-                <li style="margin-bottom: 6px;"><strong>Personnalisation :</strong> Ajustez le mode Sombre/Clair, les couleurs d'accentuation, et masquez les panneaux inutilisés.</li>
-            </ul>
-            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 20px;">🚀 Installation et Configuration Hors-Ligne</h3>
-            <p>Quartermaster Command est une application statique côté client (aucun serveur requis).</p>
-            <ul style="margin-top: 0;">
-                <li style="margin-bottom: 6px;"><strong>Utilisation Web :</strong> Accédez simplement à l'URL hébergée.</li>
-                <li style="margin-bottom: 6px;"><strong>Installation Mobile / PWA :</strong> Visitez l'URL sur un appareil compatible et appuyez sur "Ajouter à l'écran d'accueil".</li>
-                <li style="margin-bottom: 6px;"><strong>Utilisation Locale :</strong> Téléchargez les fichiers et ouvrez <code>index.html</code>.</li>
-            </ul>`
+        helpHtml: helpContent['fr']
     },
 
     de: {
@@ -221,7 +130,7 @@ export const i18n = {
         legAcronyms: "Akronyme", legEff: "Effizient", legYld: "Max. Ausbeute", legReg: "Region-gesperrt",
         categories: { raw: "Rohmaterialien", basicExt: "Basis-Extraktionen", intOre: "Zwischenerze", advOre: "Fortgeschrittene Erze", catalyst: "Katalysatoren", refined: "Raffinierte Metalle", "Raw Materials": "Rohmaterialien", "Basic Extractions": "Basis-Extraktionen", "Intermediate Ores": "Zwischenerze", "Advanced Ores": "Fortgeschrittene Erze", "Catalysts": "Katalysatoren", "Refined Metals": "Raffinierte Metalle" },
         items: baseItems,
-        helpHtml: `<p>Willkommen auf der <strong>Quartermaster Command</strong> Hilfeseite. Verwenden Sie das Seitenleistenmenü für die Navigation. Das System wählt automatisch die besten Routen zum Raffinieren.</p>`
+        helpHtml: helpContent['de']
     },
 
     es: {
@@ -257,7 +166,7 @@ export const i18n = {
         legAcronyms: "Acrónimos", legEff: "Eficiente", legYld: "Máx. Rendimiento", legReg: "Bloqueo Regional",
         categories: { raw: "Materias Primas", basicExt: "Extracciones Básicas", intOre: "Minerales Intermedios", advOre: "Minerales Avanzados", catalyst: "Catalizadores", refined: "Metales Refinados", "Raw Materials": "Materias Primas", "Basic Extractions": "Extracciones Básicas", "Intermediate Ores": "Minerales Intermedios", "Advanced Ores": "Minerales Avanzados", "Catalysts": "Catalizadores", "Refined Metals": "Metales Refinados" },
         items: baseItems,
-        helpHtml: `<p>Bienvenido a la página de ayuda de <strong>Quartermaster Command</strong>. Usa la barra lateral para navegar. El sistema calcula automáticamente la mejor ruta de fabricación.</p>`
+        helpHtml: helpContent['es']
     },
 
     it: {
@@ -293,7 +202,7 @@ export const i18n = {
         legAcronyms: "Acronimi", legEff: "Efficace", legYld: "Max Resa", legReg: "Blocco Reg.",
         categories: { raw: "Materie Prime", basicExt: "Estrazioni Base", intOre: "Minerali Intermedi", advOre: "Minerali Avanzati", catalyst: "Catalizzatori", refined: "Metalli Raffinati", "Raw Materials": "Materie Prime", "Basic Extractions": "Estrazioni Base", "Intermediate Ores": "Minerali Intermedi", "Advanced Ores": "Minerali Avanzados", "Catalysts": "Catalizzatori", "Refined Metals": "Metalli Raffinati" },
         items: baseItems,
-        helpHtml: `<p>Benvenuti in <strong>Quartermaster Command</strong>. Questo sistema calcola automaticamente i requisiti per la raffinazione dei metalli.</p>`
+        helpHtml: helpContent['it']
     },
 
     ar: {
@@ -329,7 +238,7 @@ export const i18n = {
         legAcronyms: "اختصارات", legEff: "فعال", legYld: "أقصى إنتاج", legReg: "مخصص للمنطقة",
         categories: { raw: "مواد خام", basicExt: "استخراج أساسي", intOre: "خامات متوسطة", advOre: "خامات متقدمة", catalyst: "محفزات", refined: "معادن مكررة", "Raw Materials": "مواد خام", "Basic Extractions": "استخراج أساسي", "Intermediate Ores": "خامات متوسطة", "Advanced Ores": "خامات متقدمة", "Catalysts": "محفزات", "Refined Metals": "معادن مكررة" },
         items: baseItems,
-        helpHtml: `<p>مرحبًا بك في <strong>Quartermaster Command</strong>. استخدم القائمة الجانبية للتنقل.</p>`
+        helpHtml: helpContent['ar']
     },
 
     ro: {
@@ -365,7 +274,7 @@ export const i18n = {
         legAcronyms: "Acronime", legEff: "Eficient", legYld: "Randament Max", legReg: "Blocat Regional",
         categories: { raw: "Materii Prime", basicExt: "Extracții de Bază", intOre: "Minereuri Intermediare", advOre: "Minereuri Avansate", catalyst: "Catalizatori", refined: "Metale Rafinate", "Raw Materials": "Materii Prime", "Basic Extractions": "Extracții de Bază", "Intermediate Ores": "Minereuri Intermediare", "Advanced Ores": "Minereuri Avansate", "Catalysts": "Catalizatori", "Refined Metals": "Metale Rafinate" },
         items: baseItems,
-        helpHtml: `<p>Bun venit la <strong>Quartermaster Command</strong>. Sistemul calculează automat cele mai bune rute de rafinare.</p>`
+        helpHtml: helpContent['ro']
     },
 
     pl: {
@@ -401,7 +310,7 @@ export const i18n = {
         legAcronyms: "Akronimy", legEff: "Wydajny", legYld: "Maks. Zysk", legReg: "Zablokowane Reg.",
         categories: { raw: "Surowce", basicExt: "Podstawowe Ekstrakcje", intOre: "Rudy Pośrednie", advOre: "Rudy Zaawansowane", catalyst: "Katalizatory", refined: "Rafinowane Metale", "Raw Materials": "Surowce", "Basic Extractions": "Podstawowe Ekstrakcje", "Intermediate Ores": "Rudy Pośrednie", "Advanced Ores": "Rudy Zaawansowane", "Catalysts": "Katalizatory", "Refined Metals": "Rafinowane Metale" },
         items: baseItems,
-        helpHtml: `<p>Witamy w <strong>Quartermaster Command</strong>. System automatycznie oblicza najlepsze trasy rafinacji metali.</p>`
+        helpHtml: helpContent['pl']
     },
 
     pt: {
@@ -437,7 +346,7 @@ export const i18n = {
         legAcronyms: "Acrônimos", legEff: "Eficiente", legYld: "Máx Rendimento", legReg: "Bloqueio Regional",
         categories: { raw: "Matérias-Primas", basicExt: "Extrações Básicas", intOre: "Minérios Intermediários", advOre: "Minérios Avançados", catalyst: "Catalisadores", refined: "Metais Refinados", "Raw Materials": "Matérias-Primas", "Basic Extractions": "Extrações Básicas", "Intermediate Ores": "Minérios Intermediários", "Advanced Ores": "Minérios Avançados", "Catalysts": "Catalisadores", "Refined Metals": "Metais Refinados" },
         items: baseItems,
-        helpHtml: `<p>Bem-vindo ao <strong>Quartermaster Command</strong>. O sistema calcula automaticamente as melhores rotas de refino.</p>`
+        helpHtml: helpContent['pt']
     },
 
     ru: {
@@ -473,7 +382,7 @@ export const i18n = {
         legAcronyms: "Аббревиатуры", legEff: "Эффективно", legYld: "Макс. Выход", legReg: "Блок региона",
         categories: { raw: "Сырье", basicExt: "Базовые экстракции", intOre: "Промежуточные руды", advOre: "Продвинутые руды", catalyst: "Катализаторы", refined: "Очищенные металлы", "Raw Materials": "Сырье", "Basic Extractions": "Базовые экстракции", "Intermediate Ores": "Промежуточные руды", "Advanced Ores": "Продвинутые руды", "Catalysts": "Катализаторы", "Refined Metals": "Очищенные металлы" },
         items: baseItems,
-        helpHtml: `<p>Добро пожаловать в <strong>Quartermaster Command</strong>. Система автоматически рассчитывает оптимальные маршруты переработки.</p>`
+        helpHtml: helpContent['ru']
     },
 
     fi: {
@@ -509,7 +418,7 @@ export const i18n = {
         legAcronyms: "Lyhenteet", legEff: "Tehokas", legYld: "Maks. Tuotto", legReg: "Aluelukittu",
         categories: { raw: "Raaka-aineet", basicExt: "Peruserottelut", intOre: "Välimalmit", advOre: "Edistyneet malmit", catalyst: "Katalyytit", refined: "Jalostetut metallit", "Raw Materials": "Raaka-aineet", "Basic Extractions": "Peruserottelut", "Intermediate Ores": "Välimalmit", "Advanced Ores": "Edistyneet malmit", "Catalysts": "Katalyytit", "Refined Metals": "Jalostetut metallit" },
         items: baseItems,
-        helpHtml: `<p>Tervetuloa <strong>Quartermaster Commandiin</strong>. Järjestelmä laskee optimaaliset jalostusreitit automaattisesti.</p>`
+        helpHtml: helpContent['fi']
     },
 
     uk: {
@@ -545,7 +454,7 @@ export const i18n = {
         legAcronyms: "Абревіатури", legEff: "Ефективно", legYld: "Макс. Вихід", legReg: "Блок регіону",
         categories: { raw: "Сировина", basicExt: "Базові екстракції", intOre: "Проміжні руди", advOre: "Просунуті руди", catalyst: "Каталізатори", refined: "Очищені метали", "Raw Materials": "Сировина", "Basic Extractions": "Базові екстракції", "Intermediate Ores": "Проміжні руди", "Advanced Ores": "Просунуті руди", "Catalysts": "Каталізатори", "Refined Metals": "Очищені метали" },
         items: baseItems,
-        helpHtml: `<p>Ласкаво просимо в <strong>Quartermaster Command</strong>. Система автоматично розраховує оптимальні маршрути переробки.</p>`
+        helpHtml: helpContent['uk']
     },
 
     hu: {
@@ -581,7 +490,7 @@ export const i18n = {
         legAcronyms: "Rövidítések", legEff: "Hatékony", legYld: "Max. Hozam", legReg: "Régiózáras",
         categories: { raw: "Nyersanyagok", basicExt: "Alap Extrakciók", intOre: "Köztes Ércek", advOre: "Haladó Ércek", catalyst: "Katalizátorok", refined: "Finomított Fémek", "Raw Materials": "Nyersanyagok", "Basic Extractions": "Alap Extrakciók", "Intermediate Ores": "Köztes Ércek", "Advanced Ores": "Haladó Ércek", "Catalysts": "Katalizátorok", "Refined Metals": "Finomított Fémek" },
         items: baseItems,
-        helpHtml: `<p>Üdvözöljük a <strong>Quartermaster Command</strong> súgójában. A rendszer automatikusan kiszámítja a legjobb finomítási útvonalakat.</p>`
+        helpHtml: helpContent['hu']
     },
 
     tr: {
@@ -617,7 +526,7 @@ export const i18n = {
         legAcronyms: "Kısaltmalar", legEff: "Verimli", legYld: "Maks. Verim", legReg: "Bölge Kilitli",
         categories: { raw: "Hammaddeler", basicExt: "Temel Çıkarımlar", intOre: "Ara Cevherler", advOre: "Gelişmiş Cevherler", catalyst: "Katalizörler", refined: "Rafine Metaller", "Raw Materials": "Hammaddeler", "Basic Extractions": "Temel Çıkarımlar", "Intermediate Ores": "Ara Cevherler", "Advanced Ores": "Gelişmiş Cevherler", "Catalysts": "Katalizörler", "Refined Metals": "Rafine Metaller" },
         items: baseItems,
-        helpHtml: `<p><strong>Quartermaster Command</strong> yardım sayfasına hoş geldiniz. Sistem en iyi arıtma yollarını otomatik olarak hesaplar.</p>`
+        helpHtml: helpContent['tr']
     },
 
     sv: {
@@ -653,7 +562,7 @@ export const i18n = {
         legAcronyms: "Förkortningar", legEff: "Effektiv", legYld: "Max. Utbyte", legReg: "Regionlåst",
         categories: { raw: "Råmaterial", basicExt: "Grundextraktioner", intOre: "Mellanmalmer", advOre: "Avancerade Malmer", catalyst: "Katalysatorer", refined: "Raffinerade Metaller", "Raw Materials": "Råmaterial", "Basic Extractions": "Grundextraktioner", "Intermediate Ores": "Mellanmalmer", "Advanced Ores": "Avancerade Malmer", "Catalysts": "Katalysatorer", "Refined Metals": "Raffinerade Metaller" },
         items: baseItems,
-        helpHtml: `<p>Välkommen till <strong>Quartermaster Command</strong>. Systemet beräknar de bästa raffineringsvägarna automatiskt.</p>`
+        helpHtml: helpContent['sv']
     },
 
     cs: {
@@ -689,7 +598,7 @@ export const i18n = {
         legAcronyms: "Zkratky", legEff: "Efektivní", legYld: "Max. Výnos", legReg: "Uzamčeno",
         categories: { raw: "Suroviny", basicExt: "Základní extrakce", intOre: "Mezirudy", advOre: "Pokročilé rudy", catalyst: "Katalyzátory", refined: "Rafinované kovy", "Raw Materials": "Suroviny", "Basic Extractions": "Základní extrakce", "Intermediate Ores": "Mezirudy", "Advanced Ores": "Pokročilé rudy", "Catalysts": "Katalyzátory", "Refined Metals": "Rafinované kovy" },
         items: baseItems,
-        helpHtml: `<p>Vítejte v <strong>Quartermaster Command</strong>. Systém automaticky vypočítá nejlepší rafinační cesty.</p>`
+        helpHtml: helpContent['cs']
     }
 };
 
