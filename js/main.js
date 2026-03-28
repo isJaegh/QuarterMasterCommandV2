@@ -76,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (target.closest('#btnOpenPrefs')) {
+            openModal('prefsModal');
+            return;
+        }
+
         if (target.closest('.module-header')) {
             const modId = target.closest('.module-header').id.replace('header_', 'mod_');
             const el = document.getElementById(modId);
@@ -84,12 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.collapsedState[modId] = el.classList.contains('collapsed');
                 saveState();
             }
-            return;
-        }
-
-        if (target.closest('#btnOpenPrefs')) {
-            e.stopPropagation();
-            openModal('prefsModal');
             return;
         }
 

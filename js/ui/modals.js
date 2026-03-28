@@ -2,8 +2,8 @@
 // QUARTERMASTER COMMAND - LAZY LOAD MODAL ENGINE
 // ============================================================================
 
-// TODO: Uncomment this once you add 'export' to your changeLang function in lang.js
-// import { changeLang } from '../data/lang.js'; 
+import { i18n } from '../data/lang.js';
+import { state } from '../state/store.js';
 
 /**
  * Opens a modal. If it hasn't been opened yet, it lazy-loads the HTML from its template.
@@ -39,6 +39,12 @@ export function openModal(modalId) {
     // 4. Reset specific states based on which modal opened
     if (modalId === 'settingsModal') {
         switchTab('view'); // Always open settings to the 'View' tab
+    }
+
+    if (modalId === 'helpModal') {
+        const t = i18n[state.currentLang] || i18n['en'];
+        const helpEl = document.getElementById('dynamicHelpContent');
+        if (helpEl && t.helpHtml) helpEl.innerHTML = t.helpHtml;
     }
 }
 
