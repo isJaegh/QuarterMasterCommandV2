@@ -6,7 +6,7 @@ import { state, saveState, loadState, clearAll, generateShareCode, loadShareCode
 import { openModal, closeModal, switchTab, toggleSidebar } from './ui/modals.js';
 import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleStep, updatePathChoice, handlePipelineChange } from './core/pipeline.js';
 import { calculate, handleModeChange, targetMetalChanged, calculateMax } from './core/app.js';
-import { applyColors, resetColors, toggleTheme } from './ui/theme.js';
+import { applyColors, resetColors, toggleTheme, syncColorPickers } from './ui/theme.js';
 import { sendToDiscord, copyDiscord } from './network/discord.js';
 import { renderBankTable } from './ui/bank.js';
 import { initMarketData, renderMarketTable, autoFillCart, clearCart } from './ui/market.js';
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. BOOT SEQUENCE
     loadState();
+    syncColorPickers();
 
     // Restore market initialization if missing
     if (Object.keys(state.marketData).length === 0) initMarketData();
@@ -56,8 +57,28 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         const target = e.target;
 
-        if (target.closest('.close[data-close]')) {
-            closeModal(target.closest('.close').dataset.close);
+        // 1. Close modal when clicking the dark background overlay
+        if (target.classList.contains('modal')) {
+            closeModal(target.id);
+            return;
+        }
+
+        // 2. Handle closing modals via the 'X' icon or 'Acknowledge' buttons
+        if (target.closest('[data-close]')) {
+            closeModal(target.closest('[data-close]').dataset.close);
+            return;
+        }
+
+        // 3. Handle pipeline tool route choice FIRST (Machine Selection)
+        if (target.closest('[data-action="changeRoute"]')) {
+            const btn = target.closest('[data-action="changeRoute"]');
+            updatePathChoice(null, btn.dataset.step, btn.dataset.route);
+            return;
+        }
+
+        // 4. Handle pipeline step toggle SECOND
+        if (target.closest('[data-action="toggleStep"]')) {
+            toggleStep(Number(target.closest('[data-action="toggleStep"]').dataset.index));
             return;
         }
 
@@ -173,5 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 5. GLOBAL SCOPE EXPOSURE (CRITICAL FOR DYNAMIC HTML)
 // ============================================================================
 // toggleStep and updatePathChoice are still used via inline onclick in renderPipeline (app.js)
+// but mapping them here ensures fallback functionality if custom data-actions are missed
 window.toggleStep = toggleStep;
 window.updatePathChoice = updatePathChoice;

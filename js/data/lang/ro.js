@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Acronime", legEff: "Eficient", legYld: "Randament Max", legReg: "Blocat Regional",
     categories: { raw: "Materii Prime", basicExt: "Extracții de Bază", intOre: "Minereuri Intermediare", advOre: "Minereuri Avansate", catalyst: "Catalizatori", refined: "Metale Rafinate", "Raw Materials": "Materii Prime", "Basic Extractions": "Extracții de Bază", "Intermediate Ores": "Minereuri Intermediare", "Advanced Ores": "Minereuri Avansate", "Catalysts": "Catalizatori", "Refined Metals": "Metale Rafinate" },
     items: baseItems,
-    helpHtml: helpContent['ro']
+    helpHtml: helpContent['ro'],
+    ackBank: "Confirmă", ackCart: "Confirmă", ackPrefs: "Confirmă", ackHelp: "Confirmă", ackSettings: "Confirmă"
 };

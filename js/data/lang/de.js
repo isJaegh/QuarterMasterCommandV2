@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Akronyme", legEff: "Effizient", legYld: "Max. Ausbeute", legReg: "Region-gesperrt",
     categories: { raw: "Rohmaterialien", basicExt: "Basis-Extraktionen", intOre: "Zwischenerze", advOre: "Fortgeschrittene Erze", catalyst: "Katalysatoren", refined: "Raffinierte Metalle", "Raw Materials": "Rohmaterialien", "Basic Extractions": "Basis-Extraktionen", "Intermediate Ores": "Zwischenerze", "Advanced Ores": "Fortgeschrittene Erze", "Catalysts": "Katalysatoren", "Refined Metals": "Raffinierte Metalle" },
     items: baseItems,
-    helpHtml: helpContent['de']
+    helpHtml: helpContent['de'],
+    ackBank: "Bestätigen", ackCart: "Bestätigen", ackPrefs: "Bestätigen", ackHelp: "Bestätigen", ackSettings: "Bestätigen"
 };

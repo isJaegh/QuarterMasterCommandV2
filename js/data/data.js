@@ -34,22 +34,21 @@ export const RECIPES = {
     oghmium: { "Alloy": { type: 'alloy', primary: 'tungsteel', cat1: 'cronite', cat2: 'sanguinite' } },
     tungsteel: { "Alloy": { type: 'alloy', primary: 'gs', cat1: 'lupium', cat2: 'granumpowder' } },
     cronite: { "Alloy": { type: 'alloy', primary: 'gs', cat1: 'almine', cat2: 'acronite' } },
-    steel: {
-        "Alloy (Coal)": { type: 'alloy', primary: 'gs', cat1: 'coal', cat2: 'sp' },
-        "Alloy (Coke)": { type: 'alloy', primary: 'gs', cat1: 'coke', cat2: 'sp' }
-    },
-    gs: {
-        "Alloy (Coke)": { type: 'alloy', primary: 'pi', cat1: 'cp', cat2: 'coke' },
-        "Alloy (Coal)": { type: 'alloy', primary: 'pi', cat1: 'cp', cat2: 'coal' }
-    },
+    steel: { "Alloy": { type: 'alloy', primary: 'gs', cat1: 'coal', cat2: 'sp' } },
+    gs: { "Alloy": { type: 'alloy', primary: 'pi', cat1: 'cp', cat2: 'coke' } },
     tmessing: { "Alloy": { type: 'alloy', primary: 'messing', cat1: 'almine', cat2: 'gemmetal' } },
-    messing: {
-        "Alloy (Calamine)": { type: 'alloy', primary: 'cuprum', cat1: 'calamine', cat2: 'sp' },
-        "Alloy (Bor)": { type: 'alloy', primary: 'cuprum', cat1: 'bor', cat2: 'sp' }
+    messing: { "Alloy": { type: 'alloy', primary: 'cuprum', cat1: 'calamine', cat2: 'sp' } },
+    bron: { "Alloy": { type: 'alloy', primary: 'cuprum', cat1: 'bleck', cat2: 'sp' } },
+    pi: {
+        "Blast Furnace": { type: 'smelt', ore: 'bo', oreYield: 0.50, cat: 'coke', catReq: 0.0385 },
+        "Furnace": { type: 'smelt', ore: 'bo', oreYield: 0.40, cat: 'coke', catReq: 0.0385 }
     },
-    bron: { "Alloy": { type: 'alloy', primary: 'cuprum', cat1: 'bleckblende', cat2: 'sp' } },
-    pi: { "Smelt": { type: 'smelt', ore: 'bo', oreYield: 0.40, cat: 'coke', catReq: 0.0385 } },
-    cuprum: { "Smelt": { type: 'smelt', ore: 'malachite', oreYield: 0.50, cat: 'bor', catReq: 0.0715 } }
+    cuprum: {
+        "Blast Furnace (Bor)": { type: 'smelt', ore: 'malachite', oreYield: 0.50, cat: 'bor', catReq: 0.0715 },
+        "Blast Furnace (Coke)": { type: 'smelt', ore: 'malachite', oreYield: 0.50, cat: 'coke', catReq: 0.0385 },
+        "Furnace (Bor)": { type: 'smelt', ore: 'malachite', oreYield: 0.40, cat: 'bor', catReq: 0.0715 },
+        "Furnace (Coke)": { type: 'smelt', ore: 'malachite', oreYield: 0.40, cat: 'coke', catReq: 0.0385 }
+    }
 };
 
 export const EXTRACTION_ROUTES = {

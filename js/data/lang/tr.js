@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Kısaltmalar", legEff: "Verimli", legYld: "Maks. Verim", legReg: "Bölge Kilitli",
     categories: { raw: "Hammaddeler", basicExt: "Temel Çıkarımlar", intOre: "Ara Cevherler", advOre: "Gelişmiş Cevherler", catalyst: "Katalizörler", refined: "Rafine Metaller", "Raw Materials": "Hammaddeler", "Basic Extractions": "Temel Çıkarımlar", "Intermediate Ores": "Ara Cevherler", "Advanced Ores": "Gelişmiş Cevherler", "Catalysts": "Katalizörler", "Refined Metals": "Rafine Metaller" },
     items: baseItems,
-    helpHtml: helpContent['tr']
+    helpHtml: helpContent['tr'],
+    ackBank: "Onayla", ackCart: "Onayla", ackPrefs: "Onayla", ackHelp: "Onayla", ackSettings: "Onayla"
 };

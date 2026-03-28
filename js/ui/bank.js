@@ -35,17 +35,23 @@ export function renderBankTable() {
     });
     container.innerHTML = html;
 
-    container.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-action]');
-        if (!btn) return;
-        const id = btn.dataset.id;
-        if (btn.dataset.action === 'quickSub') quickSub(id);
-        else if (btn.dataset.action === 'quickAdd') quickAdd(id);
-        else if (btn.dataset.action === 'clearItem') clearItem(id);
-    });
-    container.addEventListener('input', (e) => {
-        if (e.target.dataset.action === 'bankInput') handlePipelineChange();
-    });
+    if (!container.dataset.listenersBound) {
+        container.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const id = btn.dataset.id;
+            if (btn.dataset.action === 'quickSub') quickSub(id);
+            else if (btn.dataset.action === 'quickAdd') quickAdd(id);
+            else if (btn.dataset.action === 'clearItem') clearItem(id);
+        });
+
+        container.addEventListener('input', (e) => {
+            if (e.target.dataset.action === 'bankInput') handlePipelineChange();
+        });
+
+        // SET THE FLAG
+        container.dataset.listenersBound = 'true';
+    }
 }
 
 export function quickAdd(id) {

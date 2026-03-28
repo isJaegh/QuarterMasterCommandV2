@@ -376,12 +376,12 @@ function renderPipeline({ t, crafters, showBp }) {
                 let safeStepKey = stepObj.stepKey.replace(/'/g, "\\'");
                 let safeRouteName = rs.name.replace(/'/g, "\\'");
 
-                return `<button class="${classes.join(' ')}" onclick="updatePathChoice(event, '${safeStepKey}', '${safeRouteName}')"><span>${rs.name}</span>${badgeHtml}</button>`;
+                return `<button class="${classes.join(' ')}" data-action="changeRoute" data-step="${safeStepKey}" data-route="${safeRouteName}"><span>${rs.name}</span>${badgeHtml}</button>`;
             }).join('');
             routeHtml = `<div class="route-choices">${btns}</div>`;
         }
 
-        return `<div class="step-card ${completedClass}" id="step_${index}" onclick="toggleStep(${index})">
+        return `<div class="step-card ${completedClass}" id="step_${index}" data-action="toggleStep" data-index="${index}">
             <div>
                 <span style="cursor:pointer; margin-right:8px; font-size: 1.1em; font-weight: bold;">${checkIcon}</span>
                 <span style="color:var(--text-dim); font-weight:bold; margin-right:5px;">${t.stepPrefix || 'Step'} ${index + 1}.</span>${modAction}${perCr}

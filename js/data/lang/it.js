@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Acronimi", legEff: "Efficace", legYld: "Max Resa", legReg: "Blocco Reg.",
     categories: { raw: "Materie Prime", basicExt: "Estrazioni Base", intOre: "Minerali Intermedi", advOre: "Minerali Avanzati", catalyst: "Catalizzatori", refined: "Metalli Raffinati", "Raw Materials": "Materie Prime", "Basic Extractions": "Estrazioni Base", "Intermediate Ores": "Minerali Intermedi", "Advanced Ores": "Minerali Avanzados", "Catalysts": "Catalizzatori", "Refined Metals": "Metalli Raffinati" },
     items: baseItems,
-    helpHtml: helpContent['it']
+    helpHtml: helpContent['it'],
+    ackBank: "Conferma", ackCart: "Conferma", ackPrefs: "Conferma", ackHelp: "Conferma", ackSettings: "Conferma"
 };

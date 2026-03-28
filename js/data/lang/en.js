@@ -35,5 +35,6 @@ export default {
     legAcronyms: "Acronyms", legEff: "Efficient", legYld: "Max Yield", legReg: "Region Locked",
     categories: baseCategories,
     items: baseItems,
-    helpHtml: helpContent['en']
+    helpHtml: helpContent['en'],
+    ackBank: "Acknowledge", ackCart: "Acknowledge", ackPrefs: "Acknowledge", ackHelp: "Acknowledge", ackSettings: "Acknowledge"
 };

@@ -144,26 +144,29 @@ export function renderMarketTable() {
     html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--border);"><div style="font-weight:bold; text-transform:uppercase; color:var(--text-dim);">${t.cartTotal || 'Total'}</div><div id="cartTotalGold" style="font-weight:bold; color:var(--accent); font-size:1.3em;">0.00 g</div></div>`;
     container.innerHTML = html;
 
-    container.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-action]');
-        if (!btn) return;
-        const k = btn.dataset.key;
-        const idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
-        const action = btn.dataset.action;
-        if (action === 'removeMarketTier') removeMarketTier(k, idx);
-        else if (action === 'addMarketTier') addMarketTier(k);
-        else if (action === 'quickSubMarket') quickSubMarket(k, idx);
-        else if (action === 'quickAddMarket') quickAddMarket(k, idx);
-        else if (action === 'autoFillMarketItem') autoFillMarketItem(k);
-        else if (action === 'clearMarketTier') clearMarketTier(k, idx);
-    });
-    container.addEventListener('input', (e) => {
-        const el = e.target;
-        const k = el.dataset.key;
-        const idx = el.dataset.idx !== undefined ? Number(el.dataset.idx) : undefined;
-        if (el.dataset.action === 'updatePrice') updateMarketTier(k, idx, 'p', el.value);
-        else if (el.dataset.action === 'updateQty') updateMarketTier(k, idx, 'q', el.value);
-    });
+    if (!container.dataset.listenersBound) {
+        container.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const k = btn.dataset.key;
+            const idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
+            const action = btn.dataset.action;
+            if (action === 'removeMarketTier') removeMarketTier(k, idx);
+            else if (action === 'addMarketTier') addMarketTier(k);
+            else if (action === 'quickSubMarket') quickSubMarket(k, idx);
+            else if (action === 'quickAddMarket') quickAddMarket(k, idx);
+            else if (action === 'autoFillMarketItem') autoFillMarketItem(k);
+            else if (action === 'clearMarketTier') clearMarketTier(k, idx);
+        });
+        container.addEventListener('input', (e) => {
+            const el = e.target;
+            const k = el.dataset.key;
+            const idx = el.dataset.idx !== undefined ? Number(el.dataset.idx) : undefined;
+            if (el.dataset.action === 'updatePrice') updateMarketTier(k, idx, 'p', el.value);
+            else if (el.dataset.action === 'updateQty') updateMarketTier(k, idx, 'q', el.value);
+        });
+        container.dataset.listenersBound = 'true';
+    }
 
     if (document.getElementById('targetMetal')) {
         updateVisibility(document.getElementById('targetMetal').value);

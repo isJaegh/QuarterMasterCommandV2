@@ -40,40 +40,26 @@ export function applyColors(fromLoad = false) {
         btnReset.disabled = !isCustom;
     }
 
-    if (!fromLoad) save();
+    if (!fromLoad) saveState(); // FIXED: Was incorrectly calling save()
 }
 
 export function resetColors() {
-    const isLight = document.body.classList.contains('light-theme');
-    const themeKey = isLight ? 'light' : 'dark';
-    const defs = defaultColors[themeKey];
-
-    if (document.getElementById('colorAccent')) document.getElementById('colorAccent').value = defs.accent;
-    if (document.getElementById('colorBg')) document.getElementById('colorBg').value = defs.bg;
-    if (document.getElementById('colorText')) document.getElementById('colorText').value = defs.text;
-
-    applyColors();
+    syncColorPickers();
+    saveState();
 }
 
-function syncColorPickers() {
+// FIXED: Added 'export' keyword so main.js can use it on boot
+export function syncColorPickers() {
     const isLight = document.body.classList.contains('light-theme');
     const themeKey = isLight ? 'light' : 'dark';
     const defs = defaultColors[themeKey];
 
-    let cAccent = defs.accent;
-    let cBg = defs.bg;
-    let cText = defs.text;
+    // Read the actual computed CSS variables currently applied to the document
+    const rootStyles = getComputedStyle(document.documentElement);
+    let cAccent = rootStyles.getPropertyValue('--accent').trim() || defs.accent;
+    let cBg = rootStyles.getPropertyValue('--bg-card').trim() || defs.bg;
+    let cText = rootStyles.getPropertyValue('--text').trim() || defs.text;
 
-    try {
-        let data = JSON.parse(localStorage.getItem('qm_data') || '{}');
-        if (data.customColors && data.customColors[themeKey]) {
-            cAccent = data.customColors[themeKey].accent || defs.accent;
-            cBg = data.customColors[themeKey].bg || defs.bg;
-            cText = data.customColors[themeKey].text || defs.text;
-        }
-    } catch (e) { }
-
-    // HTML input[type=color] expects exactly a 7 char hex (e.g. #FFFFFF)
     if (document.getElementById('colorAccent')) document.getElementById('colorAccent').value = cAccent;
     if (document.getElementById('colorBg')) document.getElementById('colorBg').value = cBg;
     if (document.getElementById('colorText')) document.getElementById('colorText').value = cText;

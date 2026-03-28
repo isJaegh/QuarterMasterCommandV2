@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Acrônimos", legEff: "Eficiente", legYld: "Máx Rendimento", legReg: "Bloqueio Regional",
     categories: { raw: "Matérias-Primas", basicExt: "Extrações Básicas", intOre: "Minérios Intermediários", advOre: "Minérios Avançados", catalyst: "Catalisadores", refined: "Metais Refinados", "Raw Materials": "Matérias-Primas", "Basic Extractions": "Extrações Básicas", "Intermediate Ores": "Minérios Intermediários", "Advanced Ores": "Minérios Avançados", "Catalysts": "Catalisadores", "Refined Metals": "Metais Refinados" },
     items: baseItems,
-    helpHtml: helpContent['pt']
+    helpHtml: helpContent['pt'],
+    ackBank: "Confirmar", ackCart: "Confirmar", ackPrefs: "Confirmar", ackHelp: "Confirmar", ackSettings: "Confirmar"
 };

@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Абревіатури", legEff: "Ефективно", legYld: "Макс. Вихід", legReg: "Блок регіону",
     categories: { raw: "Сировина", basicExt: "Базові екстракції", intOre: "Проміжні руди", advOre: "Просунуті руди", catalyst: "Каталізатори", refined: "Очищені метали", "Raw Materials": "Сировина", "Basic Extractions": "Базові екстракції", "Intermediate Ores": "Проміжні руди", "Advanced Ores": "Просунуті руди", "Catalysts": "Каталізатори", "Refined Metals": "Очищені метали" },
     items: baseItems,
-    helpHtml: helpContent['uk']
+    helpHtml: helpContent['uk'],
+    ackBank: "Підтвердити", ackCart: "Підтвердити", ackPrefs: "Підтвердити", ackHelp: "Підтвердити", ackSettings: "Підтвердити"
 };

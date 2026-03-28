@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Akronimy", legEff: "Wydajny", legYld: "Maks. Zysk", legReg: "Zablokowane Reg.",
     categories: { raw: "Surowce", basicExt: "Podstawowe Ekstrakcje", intOre: "Rudy Pośrednie", advOre: "Rudy Zaawansowane", catalyst: "Katalizatory", refined: "Rafinowane Metale", "Raw Materials": "Surowce", "Basic Extractions": "Podstawowe Ekstrakcje", "Intermediate Ores": "Rudy Pośrednie", "Advanced Ores": "Rudy Zaawansowane", "Catalysts": "Katalizatory", "Refined Metals": "Rafinowane Metale" },
     items: baseItems,
-    helpHtml: helpContent['pl']
+    helpHtml: helpContent['pl'],
+    ackBank: "Potwierdź", ackCart: "Potwierdź", ackPrefs: "Potwierdź", ackHelp: "Potwierdź", ackSettings: "Potwierdź"
 };

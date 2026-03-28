@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Rövidítések", legEff: "Hatékony", legYld: "Max. Hozam", legReg: "Régiózáras",
     categories: { raw: "Nyersanyagok", basicExt: "Alap Extrakciók", intOre: "Köztes Ércek", advOre: "Haladó Ércek", catalyst: "Katalizátorok", refined: "Finomított Fémek", "Raw Materials": "Nyersanyagok", "Basic Extractions": "Alap Extrakciók", "Intermediate Ores": "Köztes Ércek", "Advanced Ores": "Haladó Ércek", "Catalysts": "Katalizátorok", "Refined Metals": "Finomított Fémek" },
     items: baseItems,
-    helpHtml: helpContent['hu']
+    helpHtml: helpContent['hu'],
+    ackBank: "Rendben", ackCart: "Rendben", ackPrefs: "Rendben", ackHelp: "Rendben", ackSettings: "Rendben"
 };

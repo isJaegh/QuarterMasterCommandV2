@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Аббревиатуры", legEff: "Эффективно", legYld: "Макс. Выход", legReg: "Блок региона",
     categories: { raw: "Сырье", basicExt: "Базовые экстракции", intOre: "Промежуточные руды", advOre: "Продвинутые руды", catalyst: "Катализаторы", refined: "Очищенные металлы", "Raw Materials": "Сырье", "Basic Extractions": "Базовые экстракции", "Intermediate Ores": "Промежуточные руды", "Advanced Ores": "Продвинутые руды", "Catalysts": "Катализаторы", "Refined Metals": "Очищенные металлы" },
     items: baseItems,
-    helpHtml: helpContent['ru']
+    helpHtml: helpContent['ru'],
+    ackBank: "Подтвердить", ackCart: "Подтвердить", ackPrefs: "Подтвердить", ackHelp: "Подтвердить", ackSettings: "Подтвердить"
 };

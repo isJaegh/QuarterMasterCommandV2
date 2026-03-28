@@ -34,5 +34,6 @@ export default {
     legAcronyms: "اختصارات", legEff: "فعال", legYld: "أقصى إنتاج", legReg: "مخصص للمنطقة",
     categories: { raw: "مواد خام", basicExt: "استخراج أساسي", intOre: "خامات متوسطة", advOre: "خامات متقدمة", catalyst: "محفزات", refined: "معادن مكررة", "Raw Materials": "مواد خام", "Basic Extractions": "استخراج أساسي", "Intermediate Ores": "خامات متوسطة", "Advanced Ores": "خامات متقدمة", "Catalysts": "محفزات", "Refined Metals": "معادن مكررة" },
     items: baseItems,
-    helpHtml: helpContent['ar']
+    helpHtml: helpContent['ar'],
+    ackBank: "تأكيد", ackCart: "تأكيد", ackPrefs: "تأكيد", ackHelp: "تأكيد", ackSettings: "تأكيد"
 };

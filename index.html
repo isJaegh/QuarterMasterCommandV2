@@ -23,7 +23,7 @@
     <div id="sidebar" class="sidebar">
         <span class="close-sidebar" id="btnCloseSidebar">&times;</span>
         <div class="sidebar-links">
-            <button class="btn-sidebar" data-action="openModal" data-modal="bankModal"><span id="ui_btnBank">Calculate Max Craftable</span></button>
+            <button class="btn-sidebar" data-action="openModal" data-modal="bankModal"><span id="ui_btnBank">Inventory</span></button>
             <button class="btn-sidebar" data-action="openModal" data-modal="cartModal"><span id="ui_btnCart">Cart</span></button>
             <button class="btn-sidebar" data-action="openModal" data-modal="settingsModal"><span id="ui_btnSettings">Settings</span></button>
             <button class="btn-sidebar" data-action="openModal" data-modal="helpModal"><span id="ui_btnHelp">Help</span></button>
@@ -44,7 +44,7 @@
     <template id="tpl_bankModal">
         <div class="modal-content module" style="padding: 0; max-width: 550px;">
             <div class="modal-header-sticky">
-                <h3 style="margin:0; color:var(--accent);" id="ui_invBankTitle">Calculate Max Craftable</h3>
+                <h3 style="margin:0; color:var(--accent);" id="ui_invBankTitle">Inventory</h3>
                 <span class="close" data-close="bankModal">&times;</span>
             </div>
             <div class="modal-body-scroll">
@@ -59,6 +59,9 @@
                 </div>
                 <input type="text" id="searchBank" class="search-input" placeholder="Search...">
                 <div id="bankContainer"></div>
+            </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_ackBank" data-close="bankModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
             </div>
         </div>
     </template>
@@ -84,6 +87,9 @@
                 <input type="text" id="searchCart" class="search-input" placeholder="Search...">
                 <div id="marketContainer"></div>
             </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_ackCart" data-close="cartModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
+            </div>
         </div>
     </template>
 
@@ -95,8 +101,8 @@
                 <span class="close" data-close="maxCraftModal">&times;</span>
             </div>
             <div class="modal-body-scroll" id="maxCraftBody"></div>
-            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right;">
-                <button class="btn-dispatch" id="ui_maxAcknowledge" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_maxAcknowledge" data-close="maxCraftModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
             </div>
         </div>
     </template>
@@ -128,7 +134,7 @@
                     <div style="border-top: 1px dashed var(--border); padding-top: 15px; display: flex; flex-direction: column; gap: 8px;">
                         <div class="switch-row" id="row_chkBp">
                             <div class="switch-label"><span id="ui_chkBp">Show byproducts</span></div>
-                            <label class="theme-switch"><input type="checkbox" id="chkBp"><span class="slider slider-bp"></span></label>
+                            <label class="theme-switch"><input type="checkbox" id="chkBp" checked><span class="slider slider-bp"></span></label>
                         </div>
                         <div class="switch-row" id="row_chkEff" style="transition: opacity 0.3s;">
                             <div class="switch-label"><span class="acronym-box acronym-eff" style="margin-right:6px;">E</span> <span id="ui_btnPrefEfficient">Efficient Path</span></div>
@@ -140,6 +146,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_ackPrefs" data-close="prefsModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
             </div>
         </div>
     </template>
@@ -171,6 +180,9 @@
                         <div class="legend-card"><span class="acronym-box acronym-reg">R</span> <span id="ui_legReg">Region Locked</span></div>
                     </div>
                 </div>
+            </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_ackHelp" data-close="helpModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
             </div>
         </div>
     </template>
@@ -252,6 +264,10 @@
 
                 <p style="font-size: 12px; color: var(--text-dim); margin-top: 0;" id="ui_resetDesc"></p>
                 <button class="btn-dispatch btn-danger" id="ui_btnReset">Reset All</button>
+            </div>
+
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_ackSettings" data-close="settingsModal" style="width: auto; display: inline-block; padding: 8px 16px;">Acknowledge</button>
             </div>
         </div>
     </template>

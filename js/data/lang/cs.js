@@ -34,5 +34,6 @@ export default {
     legAcronyms: "Zkratky", legEff: "Efektivní", legYld: "Max. Výnos", legReg: "Uzamčeno",
     categories: { raw: "Suroviny", basicExt: "Základní extrakce", intOre: "Mezirudy", advOre: "Pokročilé rudy", catalyst: "Katalyzátory", refined: "Rafinované kovy", "Raw Materials": "Suroviny", "Basic Extractions": "Základní extrakce", "Intermediate Ores": "Mezirudy", "Advanced Ores": "Pokročilé rudy", "Catalysts": "Katalyzátory", "Refined Metals": "Rafinované kovy" },
     items: baseItems,
-    helpHtml: helpContent['cs']
+    helpHtml: helpContent['cs'],
+    ackBank: "Potvrdit", ackCart: "Potvrdit", ackPrefs: "Potvrdit", ackHelp: "Potvrdit", ackSettings: "Potvrdit"
 };
