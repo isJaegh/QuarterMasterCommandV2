@@ -1,6 +1,7 @@
 import { state, saveState } from '../state/store.js';
 import { i18n } from '../data/lang.js';
-import { run } from './app.js';
+
+const triggerRecalc = () => document.dispatchEvent(new CustomEvent('pipeline:changed'));
 
 export function clearPipelineProgress() {
     if (state.completedSteps.length === 0) return;
@@ -32,7 +33,7 @@ export function clearPipelineProgress() {
 export function handlePipelineChange() {
     clearPipelineProgress();
     saveState();
-    if (typeof run === 'function') run(); // Recalculate everything
+    triggerRecalc(); // Recalculate everything
 }
 
 export function updatePrefVisuals() {
@@ -78,7 +79,7 @@ export function toggleGlobalPref(prefType, isChecked) {
 
     updatePrefVisuals();
     saveState();
-    if (typeof run === 'function') run();
+    triggerRecalc();
 }
 
 export function updatePathChoice(e, stepKey, selectedRoute) {
@@ -96,7 +97,7 @@ export function updatePathChoice(e, stepKey, selectedRoute) {
 
     state.userPathChoices[stepKey] = selectedRoute;
     saveState();
-    if (typeof run === 'function') run();
+    triggerRecalc();
 }
 
 export function setPipelineView(mode) {

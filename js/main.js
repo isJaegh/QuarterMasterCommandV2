@@ -157,6 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.id === 'targetMetal') targetMetalChanged();
     });
 
+    document.addEventListener('pipeline:changed', () => calculate());
+
     window.addEventListener('scroll', () => {
         const btn = document.getElementById('btnReturnTop');
         if (btn) btn.style.display = (window.scrollY > 200) ? 'flex' : 'none';
