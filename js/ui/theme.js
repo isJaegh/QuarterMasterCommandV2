@@ -1,13 +1,15 @@
+import { saveState } from '../state/store.js';
+
 const defaultColors = {
     dark: { accent: '#d4af37', bg: '#1c1c21', text: '#e0e0e0' },
     light: { accent: '#8a6312', bg: '#ffffff', text: '#111111' }
 };
 
-function toggleTheme() {
+export function toggleTheme() {
     document.body.classList.toggle('light-theme');
     syncThemeSwitch();
     syncColorPickers();
-    save();
+    saveState();
 }
 
 function syncThemeSwitch() {
@@ -17,7 +19,7 @@ function syncThemeSwitch() {
     }
 }
 
-function applyColors(fromLoad = false) {
+export function applyColors(fromLoad = false) {
     const isLight = document.body.classList.contains('light-theme');
     const themeKey = isLight ? 'light' : 'dark';
     const defs = defaultColors[themeKey];
@@ -41,7 +43,7 @@ function applyColors(fromLoad = false) {
     if (!fromLoad) save();
 }
 
-function resetColors() {
+export function resetColors() {
     const isLight = document.body.classList.contains('light-theme');
     const themeKey = isLight ? 'light' : 'dark';
     const defs = defaultColors[themeKey];

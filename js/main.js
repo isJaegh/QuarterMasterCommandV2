@@ -4,7 +4,7 @@
 
 import { state, saveState, loadState, clearAll, generateShareCode, loadShareCode } from './state/store.js';
 import { openModal, closeModal, switchTab, toggleSidebar } from './ui/modals.js';
-import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleStep, updatePathChoice } from './core/pipeline.js';
+import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleStep, updatePathChoice, handlePipelineChange } from './core/pipeline.js';
 import { calculate, handleModeChange, targetMetalChanged, calculateMax } from './core/app.js';
 import { applyColors, resetColors, toggleTheme } from './ui/theme.js';
 import { sendToDiscord, copyDiscord } from './network/discord.js';
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = e.target;
 
         if (target.id === 'mode') handleModeChange();
-        if (target.id === 'lang') setLang(target.value);
+        if (target.id === 'lang') { setLang(target.value); renderBankTable(); renderMarketTable(); calculate(); }
         if (target.id === 'themeToggleCb') toggleTheme();
         if (['colorAccent', 'colorBg', 'colorText'].includes(target.id)) applyColors();
 
@@ -179,3 +179,4 @@ window.quickSubMarket = quickSubMarket;
 window.autoFillMarketItem = autoFillMarketItem;
 window.clearMarketTier = clearMarketTier;
 window.updateMarketTier = updateMarketTier;
+window.handlePipelineChange = handlePipelineChange;

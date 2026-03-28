@@ -1,3 +1,5 @@
+import { state, saveState } from '../state/store.js';
+
 export const baseItems = {
     granum: "Granum", calx: "Calx", saburra: "Saburra", tephra: "Tephra", bor: "Bor", gabore: "Gabore", kimurite: "Kimurite", lodestone: "Lodestone", risensacrificecarcass: "Risen Sacrifice",
     sp: "Saburra Powder", cp: "Calx Powder", gaborepowder: "Gabore Powder", lodestonepowder: "Lodestone Powder",
@@ -690,3 +692,15 @@ export const i18n = {
         helpHtml: `<p>Vítejte v <strong>Quartermaster Command</strong>. Systém automaticky vypočítá nejlepší rafinační cesty.</p>`
     }
 };
+
+export function setLang(lang) {
+    state.currentLang = lang;
+    const t = i18n[lang] || i18n['en'];
+    Object.keys(t).forEach(key => {
+        const el = document.getElementById('ui_' + key);
+        if (el && typeof t[key] === 'string') el.innerText = t[key];
+    });
+    const langEl = document.getElementById('lang');
+    if (langEl) langEl.value = lang;
+    saveState();
+}
