@@ -153,45 +153,15 @@ export function calculateMax() {
     }
 }
 
-export function calculate() {
+function readInputs() {
     const mode = document.getElementById('mode').value;
     const t = i18n[state.currentLang] || i18n['en'];
     const targetRaw = Number(document.getElementById('targetAmount').value) || 0;
     const crafters = Math.max(1, Number(document.getElementById('crafters').value));
     const targetMetal = document.getElementById('targetMetal').value;
     const mult = getMultiplier(mode);
-
     const chkBp = document.getElementById('chkBp');
     const showBp = chkBp ? chkBp.checked : false;
-
-    if (targetRaw <= 0) {
-        document.getElementById('gatherOutput').innerHTML = `<div class="empty-msg">${t.noTarget || 'No target set.'}</div>`;
-        document.getElementById('stepsOutput').innerHTML = "";
-        document.getElementById('statStacks').innerText = "0.00";
-        if (document.getElementById('cartTotalGold')) document.getElementById('cartTotalGold').innerText = "0.00 g";
-
-        state.pipelineStepsRaw = [];
-        state.byproductsRaw = {};
-        state.pureDeficits = {};
-
-        if (document.getElementById('row_chkBp')) document.getElementById('row_chkBp').style.display = 'none';
-        if (document.getElementById('bpContainer')) document.getElementById('bpContainer').style.display = 'none';
-        if (document.getElementById('gatherProgressBar')) document.getElementById('gatherProgressBar').style.width = '0%';
-        if (document.getElementById('projectProgressBar')) document.getElementById('projectProgressBar').style.width = '0%';
-        if (document.getElementById('projectProgressText')) {
-            document.getElementById('projectProgressText').innerText = "0%";
-            document.getElementById('projectProgressText').style.color = "var(--text)";
-        }
-
-        Object.values(CATEGORIES).flatMap(c => c.items).forEach(k => {
-            if (document.getElementById('cost_' + k)) document.getElementById('cost_' + k).innerText = "0.00";
-            if (document.getElementById('stash_' + k)) document.getElementById('stash_' + k).innerText = "0";
-        });
-        updateVisibility(targetMetal);
-        saveState();
-        return;
-    }
-
     const mR = document.getElementById('modRef').checked ? 1.03 : 1;
     const mE = document.getElementById('modExt').checked ? 1.03 : 1;
     const mM = document.getElementById('modMast').checked ? 1.06 : 1;
@@ -212,25 +182,39 @@ export function calculate() {
             });
         }
         purchased[k] = buyQtyUnits;
-
-        const costEl = document.getElementById('cost_' + k);
-        const stashEl = document.getElementById('stash_' + k);
-
-        if (costEl) {
-            let totalCostThisItem = 0;
-            if (state.marketData[k]) {
-                state.marketData[k].forEach(tier => { totalCostThisItem += (tier.q * (mode === 'stacks' ? 1 : 0.0001)) * tier.p; });
-            }
-            costEl.innerText = totalCostThisItem.toFixed(2);
-        }
-        if (stashEl) {
-            const stashRaw = (bank[k] + purchased[k]) / mult;
-            stashEl.innerText = mode === 'stacks' ? stashRaw.toFixed(2) + " Stk" : stashRaw.toLocaleString();
-        }
     });
 
-    if (document.getElementById('cartTotalGold')) document.getElementById('cartTotalGold').innerText = totalGold.toFixed(2) + " g";
+    return { mode, t, targetRaw, crafters, targetMetal, mult, showBp, mR, mE, mM, bank, purchased, totalGold };
+}
 
+function renderEmpty({ t, targetMetal }) {
+    document.getElementById('gatherOutput').innerHTML = `<div class="empty-msg">${t.noTarget || 'No target set.'}</div>`;
+    document.getElementById('stepsOutput').innerHTML = "";
+    document.getElementById('statStacks').innerText = "0.00";
+    if (document.getElementById('cartTotalGold')) document.getElementById('cartTotalGold').innerText = "0.00 g";
+
+    state.pipelineStepsRaw = [];
+    state.byproductsRaw = {};
+    state.pureDeficits = {};
+
+    if (document.getElementById('row_chkBp')) document.getElementById('row_chkBp').style.display = 'none';
+    if (document.getElementById('bpContainer')) document.getElementById('bpContainer').style.display = 'none';
+    if (document.getElementById('gatherProgressBar')) document.getElementById('gatherProgressBar').style.width = '0%';
+    if (document.getElementById('projectProgressBar')) document.getElementById('projectProgressBar').style.width = '0%';
+    if (document.getElementById('projectProgressText')) {
+        document.getElementById('projectProgressText').innerText = "0%";
+        document.getElementById('projectProgressText').style.color = "var(--text)";
+    }
+
+    Object.values(CATEGORIES).flatMap(c => c.items).forEach(k => {
+        if (document.getElementById('cost_' + k)) document.getElementById('cost_' + k).innerText = "0.00";
+        if (document.getElementById('stash_' + k)) document.getElementById('stash_' + k).innerText = "0";
+    });
+    updateVisibility(targetMetal);
+    saveState();
+}
+
+function runCalculations({ targetRaw, targetMetal, mult, mR, mE, mM, bank, purchased }) {
     const grossTree = resolveTree(targetMetal, targetRaw * mult, {}, mR);
     const grossExtractions = resolveExtractions(grossTree.deficits, mE, mM, {});
 
@@ -260,6 +244,36 @@ export function calculate() {
         window.activeResources.add(k);
     });
 
+    const newPipeline = [...actualExtractions.extSteps, ...actualTree.steps];
+    if (JSON.stringify(newPipeline) !== JSON.stringify(state.pipelineStepsRaw)) {
+        state.completedSteps = [];
+        state.focusIndex = 0;
+    }
+    state.pipelineStepsRaw = newPipeline;
+
+    return { grossTree, grossExtractions, actualExtractions, finalDeficits };
+}
+
+function renderLogistics({ mode, t, targetMetal, mult, bank, purchased, totalGold }, { grossTree, grossExtractions, actualExtractions, finalDeficits }) {
+    Object.values(CATEGORIES).flatMap(c => c.items).forEach(k => {
+        const costEl = document.getElementById('cost_' + k);
+        const stashEl = document.getElementById('stash_' + k);
+
+        if (costEl) {
+            let totalCostThisItem = 0;
+            if (state.marketData[k]) {
+                state.marketData[k].forEach(tier => { totalCostThisItem += (tier.q * (mode === 'stacks' ? 1 : 0.0001)) * tier.p; });
+            }
+            costEl.innerText = totalCostThisItem.toFixed(2);
+        }
+        if (stashEl) {
+            const stashRaw = (bank[k] + purchased[k]) / mult;
+            stashEl.innerText = mode === 'stacks' ? stashRaw.toFixed(2) + " Stk" : stashRaw.toLocaleString();
+        }
+    });
+
+    if (document.getElementById('cartTotalGold')) document.getElementById('cartTotalGold').innerText = totalGold.toFixed(2) + " g";
+
     let gHTML = '';
     let totalGatherUnits = 0;
     let totalAcquiredUnits = 0;
@@ -271,30 +285,20 @@ export function calculate() {
             let totalNeeded = (grossExtractions.raw[k] || 0) + (grossTree.intermediates[k] || 0) + (grossExtractions.extracted[k] || 0);
 
             if (totalNeeded > 0 && k !== targetMetal) {
-                let isComplete = false;
                 let missingAmt = finalDeficits[k] || 0;
-
-                if (actualExtractions.raw[k]) {
-                    totalGatherUnits += actualExtractions.raw[k];
-                }
-
-                if (missingAmt <= 0) {
-                    missingAmt = 0;
-                    isComplete = true;
-                }
+                if (actualExtractions.raw[k]) totalGatherUnits += actualExtractions.raw[k];
+                let isComplete = missingAmt <= 0;
+                if (isComplete) missingAmt = 0;
 
                 const fmtVal = mode === 'stacks' ? (missingAmt / 10000).toFixed(2) + " Stk" : missingAmt.toLocaleString();
-
                 let amountAcquired = totalNeeded - missingAmt;
                 let progressPct = totalNeeded > 0 ? Math.min(100, Math.max(0, (amountAcquired / totalNeeded) * 100)) : 0;
-
                 totalAcquiredUnits += amountAcquired;
                 totalNeededUnits += totalNeeded;
 
                 let hue = Math.floor((progressPct / 100) * 120);
                 let colorStr = `hsl(${hue}, 80%, 50%)`;
-
-                let itemName = (t.items && t.items[k]) ? t.items[k] : (k.charAt(0).toUpperCase() + k.slice(1));
+                let itemName = getItemName(k, t);
 
                 if (isComplete) {
                     catHtml += `<div class="logistics-item" style="border-left-color: ${colorStr}; --prog: 100%; --hue: 120;">
@@ -324,21 +328,15 @@ export function calculate() {
     document.getElementById('gatherOutput').innerHTML = totalNeededUnits > 0 ? gHTML : `<div class="empty-msg">${t.allCovered || 'All covered!'}</div>`;
     document.getElementById('statStacks').innerText = (totalGatherUnits / 10000).toFixed(2);
 
-    let gatherOverallPct = totalNeededUnits > 0 ? (totalAcquiredUnits / totalNeededUnits) * 100 : 100;
+    const gatherOverallPct = totalNeededUnits > 0 ? (totalAcquiredUnits / totalNeededUnits) * 100 : 100;
     if (document.getElementById('gatherProgressBar')) {
         let hueBar = Math.floor((gatherOverallPct / 100) * 120);
         document.getElementById('gatherProgressBar').style.width = gatherOverallPct + '%';
         document.getElementById('gatherProgressBar').style.backgroundColor = `hsl(${hueBar}, 70%, 50%)`;
     }
+}
 
-    let newPipeline = [...actualExtractions.extSteps, ...actualTree.steps];
-
-    if (JSON.stringify(newPipeline) !== JSON.stringify(state.pipelineStepsRaw)) {
-        state.completedSteps = [];
-        state.focusIndex = 0;
-    }
-    state.pipelineStepsRaw = newPipeline;
-
+function renderPipeline({ t, crafters, showBp }) {
     const perCr = crafters > 1 ? ` <span style="color:var(--warning); font-size:0.8em;">${t.perCrafter || '(Per Crafter)'}</span>` : "";
 
     let outputHTML = state.pipelineStepsRaw.map((stepObj, index) => {
@@ -372,13 +370,11 @@ export function calculate() {
                 let badges = [];
 
                 if (rs.name === stepObj.selectedRoute) classes.push('active');
-
                 if (rs.isBestYield) { classes.push('rt-eff'); badges.push('<span class="acronym-box acronym-eff">E</span>'); }
                 if (rs.isMaxYield) { classes.push('rt-max'); badges.push('<span class="acronym-box acronym-max">Y</span>'); }
                 if (rs.isRegionLocked) { classes.push('rt-reg'); badges.push('<span class="acronym-box acronym-reg">R</span>'); }
 
                 let badgeHtml = badges.length > 0 ? `<span style="margin-left:8px; display:inline-flex; gap:4px;">${badges.join('')}</span>` : '';
-
                 let safeStepKey = stepObj.stepKey.replace(/'/g, "\\'");
                 let safeRouteName = rs.name.replace(/'/g, "\\'");
 
@@ -402,7 +398,7 @@ export function calculate() {
     let byproductsString = "";
     Object.keys(state.byproductsRaw).forEach(k => {
         if (state.byproductsRaw[k] > 0) {
-            let itemName = (t.items && t.items[k]) ? t.items[k] : (k.charAt(0).toUpperCase() + k.slice(1));
+            let itemName = getItemName(k, t);
             byproductsString += `<div style="display:flex; justify-content:space-between; margin-bottom: 2px; font-size: 13px;">
                 <span>${itemName}</span>
                 <span style="color: var(--accent); font-weight: bold;">${state.byproductsRaw[k].toLocaleString()}</span>
@@ -412,20 +408,27 @@ export function calculate() {
 
     if (byproductsString !== "") {
         document.getElementById('bpOutput').innerHTML = byproductsString;
-        if (showBp) {
-            document.getElementById('bpContainer').style.display = 'block';
-        } else {
-            document.getElementById('bpContainer').style.display = 'none';
-        }
+        document.getElementById('bpContainer').style.display = showBp ? 'block' : 'none';
     } else {
         document.getElementById('bpContainer').style.display = 'none';
     }
 
     document.getElementById('stepsOutput').innerHTML = outputHTML;
-
     updatePipelineVisuals();
     if (state.pipelineViewMode === 'focus') updateFocusView();
+}
 
-    updateVisibility(targetMetal);
+export function calculate() {
+    const inputs = readInputs();
+
+    if (inputs.targetRaw <= 0) {
+        renderEmpty(inputs);
+        return;
+    }
+
+    const results = runCalculations(inputs);
+    renderLogistics(inputs, results);
+    renderPipeline(inputs, results);
+    updateVisibility(inputs.targetMetal);
     saveState();
 }
