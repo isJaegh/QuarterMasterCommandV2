@@ -8,8 +8,8 @@ import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleSte
 import { calculate, handleModeChange, targetMetalChanged, calculateMax } from './core/app.js';
 import { applyColors, resetColors, toggleTheme } from './ui/theme.js';
 import { sendToDiscord, copyDiscord } from './network/discord.js';
-import { renderBankTable, quickAdd, quickSub, clearItem } from './ui/bank.js';
-import { initMarketData, renderMarketTable, autoFillCart, clearCart, removeMarketTier, addMarketTier, quickAddMarket, quickSubMarket, autoFillMarketItem, clearMarketTier, updateMarketTier } from './ui/market.js';
+import { renderBankTable } from './ui/bank.js';
+import { initMarketData, renderMarketTable, autoFillCart, clearCart } from './ui/market.js';
 import { setLang } from './data/lang.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -172,16 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================================
 // 5. GLOBAL SCOPE EXPOSURE (CRITICAL FOR DYNAMIC HTML)
 // ============================================================================
+// toggleStep and updatePathChoice are still used via inline onclick in renderPipeline (app.js)
 window.toggleStep = toggleStep;
 window.updatePathChoice = updatePathChoice;
-window.quickAdd = quickAdd;
-window.quickSub = quickSub;
-window.clearItem = clearItem;
-window.removeMarketTier = removeMarketTier;
-window.addMarketTier = addMarketTier;
-window.quickAddMarket = quickAddMarket;
-window.quickSubMarket = quickSubMarket;
-window.autoFillMarketItem = autoFillMarketItem;
-window.clearMarketTier = clearMarketTier;
-window.updateMarketTier = updateMarketTier;
-window.handlePipelineChange = handlePipelineChange;

@@ -105,21 +105,21 @@ export function renderMarketTable() {
 
             tiers.forEach((tier, idx) => {
                 let addRemoveBtn = idx > 0 ?
-                    `<button class="btn-warning btn-sq" style="margin: 0; padding: 0; font-size:14px;" title="Remove Tier" onclick="removeMarketTier('${k}', ${idx})">-</button>` :
-                    `<button class="btn-accent btn-sq" style="margin: 0; padding: 0; font-size:14px; color:#000;" title="Add Tier" onclick="addMarketTier('${k}')">+</button>`;
+                    `<button class="btn-warning btn-sq" style="margin: 0; padding: 0; font-size:14px;" title="Remove Tier" data-action="removeMarketTier" data-key="${k}" data-idx="${idx}">-</button>` :
+                    `<button class="btn-accent btn-sq" style="margin: 0; padding: 0; font-size:14px; color:#000;" title="Add Tier" data-action="addMarketTier" data-key="${k}">+</button>`;
 
                 tiersHtml += `
                     <div class="market-tier-row">
                         <div style="display: flex; align-items: center; gap: 8px; min-width: 130px;">
                             <span style="color:var(--text-dim); font-size:11px; font-weight:bold; white-space: nowrap;">↳ ${t.tblOrder || 'Order'} ${idx + 1}</span>
-                            <input type="number" style="width: 55px; margin: 0;" value="${tier.p}" title="Price" max="999" oninput="updateMarketTier('${k}', ${idx}, 'p', this.value)">
+                            <input type="number" style="width: 55px; margin: 0;" value="${tier.p}" title="Price" max="999" data-action="updatePrice" data-key="${k}" data-idx="${idx}">
                         </div>
                         <div style="display:flex; gap: 4px; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-stack q-sub" style="margin: 0; min-width:30px; padding:0 4px;" onclick="quickSubMarket('${k}', ${idx})">${subLabel}</button>
-                            <input type="number" style="width: 95px; margin: 0;" value="${tier.q}" title="Qty" oninput="updateMarketTier('${k}', ${idx}, 'q', this.value)">
-                            <button class="btn-stack q-add" style="margin: 0; min-width:30px; padding:0 4px;" onclick="quickAddMarket('${k}', ${idx})">${addLabel}</button>
-                            <button class="btn-cart btn-success" style="margin: 0; padding: 0 8px;" title="Auto-Fill Missing" onclick="autoFillMarketItem('${k}')">${t.btnAutoFill || 'Fill'}</button>
-                            <button class="btn-clear" style="margin: 0; padding: 0 8px;" title="Clear Qty" onclick="clearMarketTier('${k}', ${idx})">${t.btnClearCart || 'Clear'}</button>
+                            <button class="btn-stack q-sub" style="margin: 0; min-width:30px; padding:0 4px;" data-action="quickSubMarket" data-key="${k}" data-idx="${idx}">${subLabel}</button>
+                            <input type="number" style="width: 95px; margin: 0;" value="${tier.q}" title="Qty" data-action="updateQty" data-key="${k}" data-idx="${idx}">
+                            <button class="btn-stack q-add" style="margin: 0; min-width:30px; padding:0 4px;" data-action="quickAddMarket" data-key="${k}" data-idx="${idx}">${addLabel}</button>
+                            <button class="btn-cart btn-success" style="margin: 0; padding: 0 8px;" title="Auto-Fill Missing" data-action="autoFillMarketItem" data-key="${k}">${t.btnAutoFill || 'Fill'}</button>
+                            <button class="btn-clear" style="margin: 0; padding: 0 8px;" title="Clear Qty" data-action="clearMarketTier" data-key="${k}" data-idx="${idx}">${t.btnClearCart || 'Clear'}</button>
                             ${addRemoveBtn}
                         </div>
                     </div>`;
@@ -143,6 +143,27 @@ export function renderMarketTable() {
 
     html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--border);"><div style="font-weight:bold; text-transform:uppercase; color:var(--text-dim);">${t.cartTotal || 'Total'}</div><div id="cartTotalGold" style="font-weight:bold; color:var(--accent); font-size:1.3em;">0.00 g</div></div>`;
     container.innerHTML = html;
+
+    container.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const k = btn.dataset.key;
+        const idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
+        const action = btn.dataset.action;
+        if (action === 'removeMarketTier') removeMarketTier(k, idx);
+        else if (action === 'addMarketTier') addMarketTier(k);
+        else if (action === 'quickSubMarket') quickSubMarket(k, idx);
+        else if (action === 'quickAddMarket') quickAddMarket(k, idx);
+        else if (action === 'autoFillMarketItem') autoFillMarketItem(k);
+        else if (action === 'clearMarketTier') clearMarketTier(k, idx);
+    });
+    container.addEventListener('input', (e) => {
+        const el = e.target;
+        const k = el.dataset.key;
+        const idx = el.dataset.idx !== undefined ? Number(el.dataset.idx) : undefined;
+        if (el.dataset.action === 'updatePrice') updateMarketTier(k, idx, 'p', el.value);
+        else if (el.dataset.action === 'updateQty') updateMarketTier(k, idx, 'q', el.value);
+    });
 
     if (document.getElementById('targetMetal')) {
         updateVisibility(document.getElementById('targetMetal').value);

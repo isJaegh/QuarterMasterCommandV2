@@ -23,10 +23,10 @@ export function renderBankTable() {
                 <div style="font-weight:bold; color:var(--text);">${itemName}</div>
                 <div style="text-align:right;">
                     <div style="display:flex; gap: 4px; justify-content: flex-end; align-items:center; flex-wrap: wrap;">
-                        <button class="btn-stack q-sub" style="margin: 0; min-width:30px; padding:0 4px;" onclick="quickSub('b_${k}')">${subLabel}</button>
-                        <input type="number" id="b_${k}" value="${val}" oninput="handlePipelineChange()" style="width: 95px; margin: 0;">
-                        <button class="btn-stack q-add" style="margin: 0; min-width:30px; padding:0 4px;" onclick="quickAdd('b_${k}')">${addLabel}</button>
-                        <button class="btn-clear" style="margin: 0; padding: 0 8px;" title="Clear Qty" onclick="clearItem('b_${k}')">${t.btnClearCart || 'Clear'}</button>
+                        <button class="btn-stack q-sub" style="margin: 0; min-width:30px; padding:0 4px;" data-action="quickSub" data-id="b_${k}">${subLabel}</button>
+                        <input type="number" id="b_${k}" value="${val}" data-action="bankInput" style="width: 95px; margin: 0;">
+                        <button class="btn-stack q-add" style="margin: 0; min-width:30px; padding:0 4px;" data-action="quickAdd" data-id="b_${k}">${addLabel}</button>
+                        <button class="btn-clear" style="margin: 0; padding: 0 8px;" title="Clear Qty" data-action="clearItem" data-id="b_${k}">${t.btnClearCart || 'Clear'}</button>
                     </div>
                 </div>
             </div>`;
@@ -34,6 +34,18 @@ export function renderBankTable() {
         html += `</div>`;
     });
     container.innerHTML = html;
+
+    container.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        if (btn.dataset.action === 'quickSub') quickSub(id);
+        else if (btn.dataset.action === 'quickAdd') quickAdd(id);
+        else if (btn.dataset.action === 'clearItem') clearItem(id);
+    });
+    container.addEventListener('input', (e) => {
+        if (e.target.dataset.action === 'bankInput') handlePipelineChange();
+    });
 }
 
 export function quickAdd(id) {
