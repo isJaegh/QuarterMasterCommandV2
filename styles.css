@@ -271,6 +271,12 @@ body {
         border-color: var(--c-max);
     }
 
+/* New CSS to fade toggles when disabled */
+.theme-switch input:disabled + .slider {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .lang-flags {
     display: flex;
     align-items: center;
@@ -724,7 +730,9 @@ input, select {
         border-color: var(--accent);
     }
 
-/* Buttons */
+/* ============================================================================
+   BUTTONS & SOLID FILL HOVERS
+   ============================================================================ */
 .btn-header, .btn-stack, .btn-clear, .btn-cart, .btn-sq, .btn-mini, .btn-dispatch, .btn-route, .btn-theme, .btn-sidebar {
     background: var(--bg-input) !important;
     color: var(--accent);
@@ -740,10 +748,24 @@ input, select {
     background: var(--bg-card) !important;
 }
 
-    .light-theme .btn-header:hover, .light-theme .btn-stack:hover, .light-theme .btn-cart:hover, .light-theme .btn-sq:hover, .light-theme .btn-mini:hover, .light-theme .btn-dispatch:hover, .light-theme .btn-route:hover, .light-theme .btn-theme:hover, .light-theme .btn-sidebar:hover, .light-theme .btn-header.active, .light-theme .btn-mini.active, .light-theme .btn-route.active {
-        background: var(--accent) !important;
-        color: #fff !important;
-    }
+/* Default Theme Highlight */
+.btn-header:hover, .btn-stack:hover, .btn-cart:hover, .btn-sq:hover, .btn-mini:hover, .btn-dispatch:hover, .btn-route:hover, .btn-theme:hover, .btn-sidebar:hover {
+    background: var(--accent) !important;
+    color: #000 !important;
+    border-color: var(--accent) !important;
+}
+
+.light-theme .btn-header:hover, .light-theme .btn-stack:hover, .light-theme .btn-cart:hover, .light-theme .btn-sq:hover, .light-theme .btn-mini:hover, .light-theme .btn-dispatch:hover, .light-theme .btn-route:hover, .light-theme .btn-theme:hover, .light-theme .btn-sidebar:hover, .light-theme .btn-header.active, .light-theme .btn-mini.active, .light-theme .btn-route.active {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-color: var(--accent) !important;
+}
+
+.btn-header.active, .btn-mini.active, .btn-route.active {
+    background: var(--accent) !important;
+    color: #000 !important;
+    font-weight: bold;
+}
 
 .btn-stack, .btn-clear, .btn-cart, .btn-sq {
     height: 30px;
@@ -816,68 +838,68 @@ input, select {
     text-align: center;
 }
 
-.btn-theme {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    height: auto;
+/* Make disabled buttons unclickable and grey */
+button:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(100%) !important;
+    pointer-events: none;
 }
 
-    .btn-header:hover, .btn-stack:hover, .btn-cart:hover, .btn-sq:hover, .btn-mini:hover, .btn-dispatch:hover, .btn-route:hover, .btn-theme:hover, .btn-sidebar:hover {
-        background: var(--accent) !important;
-        color: #000 !important;
-    }
-
-.btn-header.active, .btn-mini.active, .btn-route.active {
-    background: var(--accent) !important;
-    color: #000 !important;
-    font-weight: bold;
-}
-
-.btn-success {
+/* Color Specific Hover states - Strengthened Specificity */
+.btn-success, .light-theme .btn-success {
     color: var(--success) !important;
     border-color: var(--success) !important;
 }
 
-    .btn-success:hover {
+    .btn-success:hover, body.light-theme .btn-success:hover, .light-theme .btn-success:hover {
         background: var(--success) !important;
         color: #fff !important;
+        border-color: var(--success) !important;
     }
 
-.btn-danger, .btn-clear {
+.btn-danger, .btn-clear, .light-theme .btn-danger, .light-theme .btn-clear {
     color: var(--danger) !important;
     border-color: var(--danger) !important;
 }
 
-    .btn-danger:hover, .btn-clear:hover {
+    .btn-danger:hover, .btn-clear:hover, body.light-theme .btn-danger:hover, body.light-theme .btn-clear:hover, .light-theme .btn-danger:hover, .light-theme .btn-clear:hover {
         background: var(--danger) !important;
         color: #fff !important;
+        border-color: var(--danger) !important;
     }
 
-.btn-warning {
+.btn-warning, .light-theme .btn-warning {
     color: var(--warning) !important;
     border-color: var(--warning) !important;
 }
 
-    .btn-warning:hover {
+    .btn-warning:hover, body.light-theme .btn-warning:hover, .light-theme .btn-warning:hover {
         background: var(--warning) !important;
         color: #000 !important;
+        border-color: var(--warning) !important;
     }
 
-.btn-accent {
+.btn-accent, .light-theme .btn-accent {
     color: var(--accent) !important;
     border-color: var(--accent) !important;
 }
 
-.btn-discord {
+    .btn-accent:hover, body.light-theme .btn-accent:hover, .light-theme .btn-accent:hover {
+        background: var(--accent) !important;
+        color: #000 !important;
+        border-color: var(--accent) !important;
+    }
+
+.btn-discord, .light-theme .btn-discord {
     color: #5865F2 !important;
     border-color: #5865F2 !important;
 }
 
-    .btn-discord:hover {
+    .btn-discord:hover, body.light-theme .btn-discord:hover, .light-theme .btn-discord:hover {
         background: #5865F2 !important;
         color: #fff !important;
+        border-color: #5865F2 !important;
     }
 
 /* Route Colors */
@@ -943,12 +965,6 @@ input, select {
         color: #fff !important;
         box-shadow: inset 4px 0 0 #fff;
     }
-
-.btn-theme:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    filter: grayscale(100%);
-}
 
 .view-toggles {
     display: flex;
@@ -1181,6 +1197,7 @@ input, select {
         filter: brightness(1.2);
     }
 
+/* Update #toast z-index to be highest priority */
 #toast {
     visibility: hidden;
     min-width: 250px;
@@ -1190,12 +1207,13 @@ input, select {
     border-radius: 4px;
     padding: 12px;
     position: fixed;
-    z-index: 1000;
+    /* Set higher than modal 2000 and any other menus */
+    z-index: 9999;
     left: 50%;
     bottom: 30px;
     transform: translateX(-50%);
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
     opacity: 0;
     transition: opacity 0.3s, bottom 0.3s;
 }
@@ -1277,11 +1295,13 @@ select:focus {
     justify-content: center;
     z-index: 2000;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
     .confirm-overlay.show {
         opacity: 1;
+        pointer-events: auto;
     }
 
 .confirm-box {
@@ -1398,3 +1418,15 @@ select:focus {
         justify-content: flex-end;
     }
 }
+
+/* Feedback for clickable materials in Help/Wiki */
+.material-item-link {
+    transition: all 0.2s ease;
+}
+
+    .material-item-link:hover {
+        background-color: var(--accent) !important;
+        color: #000 !important;
+        border-color: var(--accent) !important;
+        transform: translateY(-1px);
+    }

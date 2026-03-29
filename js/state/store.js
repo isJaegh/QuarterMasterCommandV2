@@ -17,10 +17,11 @@ export const state = {
     byproductsRaw: {},
     pureDeficits: {},
     userPathChoices: {},
+    userSourcePrefs: {},
     collapsedState: {},
     moduleVisibility: {},
     pipelineViewMode: 'overview',
-    globalRoutePref: null
+    globalRoutePref: 'efficient' // Set as the default routing preference
 };
 
 /**
@@ -55,9 +56,11 @@ export function saveState() {
             ext: document.getElementById('modExt')?.checked ?? true
         },
         choices: state.userPathChoices,
+        sourcePrefs: state.userSourcePrefs || {},
         collapsed: state.collapsedState,
         visibility: state.moduleVisibility,
-        theme: isLight ? 'light' : 'dark'
+        theme: isLight ? 'light' : 'dark',
+        globalRoutePref: state.globalRoutePref // Save the global route preference
     };
 
     localStorage.setItem('qm_data', JSON.stringify(data));
@@ -84,9 +87,14 @@ export function loadState() {
             if (data.market) state.marketData = data.market;
             if (data.bank) state.bankData = data.bank;
             if (data.choices) state.userPathChoices = data.choices;
+            if (data.sourcePrefs) state.userSourcePrefs = data.sourcePrefs;
             if (data.collapsed) state.collapsedState = data.collapsed;
             if (data.visibility) state.moduleVisibility = data.visibility;
             if (data.mode) state.prevMode = data.mode;
+
+            // Restore routing preference, defaulting to 'efficient' for legacy saves
+            if (data.globalRoutePref !== undefined) state.globalRoutePref = data.globalRoutePref;
+            else state.globalRoutePref = 'efficient';
 
             // Restore DOM values (templates must be pre-stamped before calling this)
             const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
@@ -106,7 +114,27 @@ export function loadState() {
                 document.body.classList.add('light-theme');
                 check('themeToggleCb', true);
             }
+        } else {
+            // Apply default 'efficient' preference for first-time users
+            state.globalRoutePref = 'efficient';
         }
+
+        // Visually sync the Path Preference toggles based on the loaded state
+        const checkSync = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
+        if (state.globalRoutePref === 'efficient') {
+            checkSync('chkEff', true);
+            const y = document.getElementById('chkYld');
+            const rowY = document.getElementById('row_chkYld');
+            if (y) y.disabled = true;
+            if (rowY) { rowY.style.opacity = '0.4'; rowY.style.pointerEvents = 'none'; }
+        } else if (state.globalRoutePref === 'yield') {
+            checkSync('chkYld', true);
+            const e = document.getElementById('chkEff');
+            const rowE = document.getElementById('row_chkEff');
+            if (e) e.disabled = true;
+            if (rowE) { rowE.style.opacity = '0.4'; rowE.style.pointerEvents = 'none'; }
+        }
+
     } catch (e) {
         console.error("Save load failed", e);
     }

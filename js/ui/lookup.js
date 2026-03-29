@@ -1,9 +1,8 @@
 // ============================================================================
 // QUARTERMASTER COMMAND - UNIFIED MATERIAL SEARCH
-// Merges "Target Resource" and "Recipe Lookup" into one search box.
 // ============================================================================
 
-import { CATEGORIES } from '../data/data.js';
+import { CATEGORIES, RECIPES, EXTRACTION_ROUTES } from '../data/data.js';
 import { i18n } from '../data/lang.js';
 import { state } from '../state/store.js';
 import { getItemName } from '../utils/format.js';
@@ -49,7 +48,6 @@ function createAutocomplete({ inputId, dropdownId, clearBtnId, getItems, onSelec
         onSelect(key);
     }
 
-    // Filter and show matches as the user types
     input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         if (!q) { close(); if (onClear) onClear(); return; }
@@ -63,13 +61,11 @@ function createAutocomplete({ inputId, dropdownId, clearBtnId, getItems, onSelec
         }
     });
 
-    // Click a suggestion
     dropdown.addEventListener('click', (e) => {
         const item = e.target.closest('.lookup-drop-item');
         if (item) selectItem(item.dataset.key);
     });
 
-    // Keyboard: Enter selects first suggestion, Escape closes
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const first = dropdown.querySelector('.lookup-drop-item');
@@ -78,7 +74,6 @@ function createAutocomplete({ inputId, dropdownId, clearBtnId, getItems, onSelec
         if (e.key === 'Escape') close();
     });
 
-    // × clear button
     if (clearBtnId) {
         const clearBtn = document.getElementById(clearBtnId);
         if (clearBtn) {
@@ -90,11 +85,9 @@ function createAutocomplete({ inputId, dropdownId, clearBtnId, getItems, onSelec
         }
     }
 
-    // Reposition on scroll so the dropdown follows the input
     window.addEventListener('scroll', () => { if (_isOpen) positionDropdown(); }, true);
     window.addEventListener('resize', () => { if (_isOpen) positionDropdown(); });
 
-    // Close when clicking outside both the input and the dropdown
     document.addEventListener('click', (e) => {
         if (_isOpen && !input.contains(e.target) && !dropdown.contains(e.target)) close();
     });
@@ -112,16 +105,24 @@ let _hiddenInput = null;
 let _initialized = false;
 
 export function isLookupMode() {
-    return _mode === 'lookup'; // Retained for main.js compatibility
+    return _mode === 'lookup';
 }
 
-export function refreshLookup() {
-    // Deprecated: All materials now use the main dynamic pipeline.
-}
+export function refreshLookup() { }
 
 // ============================================================================
 // INIT: UNIFIED SEARCH
 // ============================================================================
+
+export function isProduceable(key) {
+    if (RECIPES[key]) return true;
+    for (const src of Object.keys(EXTRACTION_ROUTES)) {
+        for (const route of Object.values(EXTRACTION_ROUTES[src])) {
+            if (route.yields[key]) return true;
+        }
+    }
+    return false;
+}
 
 export function initUnifiedSearch() {
     if (_initialized) return;
@@ -131,17 +132,19 @@ export function initUnifiedSearch() {
     if (!searchInput || !_hiddenInput) return;
     _initialized = true;
 
-    // Always start with an empty box
     _hiddenInput.value = '';
     searchInput.value = '';
 
-    // Build the full searchable item list: everything that is NOT raw material
     function getAllSearchItems(q) {
         const t = i18n[state.currentLang] || i18n['en'];
         const items = [];
         CATEGORIES.forEach(cat => {
-            if (cat.id === 'raw') return;
-            cat.items.forEach(key => items.push({ key, name: getItemName(key, t) }));
+            // REMOVED block on searching Raw Materials (like Granum, Saburra)
+            cat.items.forEach(key => {
+                if (isProduceable(key) || cat.id === 'raw') {
+                    items.push({ key, name: getItemName(key, t) });
+                }
+            });
         });
         return items
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -154,42 +157,32 @@ export function initUnifiedSearch() {
         clearBtnId: 'ui_clearTargetMetal',
         getItems: getAllSearchItems,
 
-        // User is typing (before committing to a selection)
         onInput: (_q, hasMatches) => {
-            _activeKey = null;  // no committed selection while browsing
+            _activeKey = null;
             if (!hasMatches) {
                 _mode = 'typing';
                 _showNotFoundState();
             }
         },
 
-        // User picks an item from the dropdown
         onSelect: (key) => {
             _activeKey = key;
-            // ALL materials (whether refined or extracted) now route through the main pipeline.
-            // This grants them machine selection, efficiency calculations, and consolidates missing components.
             _mode = 'refined';
             _hiddenInput.value = key;
             _hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
         },
 
-        // Box was cleared (× button or typing back to empty)
         onClear: () => {
             _mode = null;
             _activeKey = null;
             _hiddenInput.value = '';
-            // Dispatch so calculate() runs and shows the "search to begin" message
             _hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
     });
 }
 
 export const initTargetMetalSearch = initUnifiedSearch;
-export function initLookupWidget() { /* merged — no-op */ }
-
-// ============================================================================
-// INTERNAL HELPERS
-// ============================================================================
+export function initLookupWidget() { }
 
 function _showNotFoundState() {
     const t = i18n[state.currentLang] || i18n['en'];

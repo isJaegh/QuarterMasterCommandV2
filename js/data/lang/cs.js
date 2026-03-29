@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Hledat...",
     searchEmptyState: "Vyhledejte materiál pro zobrazení podrobností o výrobě.",
     searchNotFound: "Nebyl nalezen žádný materiál s tímto názvem.",
-    targetMetalLabel: "Cílový Materiál:"
+    targetMetalLabel: "Cílový Materiál:",
+    tabMaterials: "Materiály",
+    tabLegend: "Legenda",
+    modByproductsTitle: "Získané vedlejší produkty",
+    usesProducedFrom: "se vyrábí z:",
+    usesCanMake: "lze použít k výrobě:",
+    usesSetTarget: "Nastavit jako cíl",
+    usesNone: "Žádné známé recepty nebo zdroje pro",
+    usesDetails: "Podrobnosti",
+    tabMaterials: "Materiály",
+    tabLegend: "Legenda",
+    usesTitle: "Podrobnosti o materiálu",
+    btnClose: "Zavřít",
+    modByproductsTitle: "Získané vedlejší produkty",
+    usesProducedFrom: "se vyrábí z:",
+    usesCanMake: "lze použít k výrobě:",
+    usesSetTarget: "Nastavit jako cíl",
+    usesNone: "Žádné známé recepty nebo zdroje pro"
 };

@@ -6,6 +6,8 @@ import { getRelevantItems } from '../core/engine.js';
 import { closeModal } from './modals.js';
 import { getItemName, getDefaultPrice } from '../utils/format.js';
 
+let _lastTargetForVisibility = null; // Tracks target changes to auto-toggle switches
+
 export function initMarketData() {
     getAllItems().forEach(k => {
         if (!state.marketData[k]) state.marketData[k] = [{ p: getDefaultPrice(k), q: 0 }];
@@ -175,12 +177,46 @@ export function renderMarketTable() {
 }
 
 export function updateVisibility(targetMetal) {
-    const relevant = getRelevantItems(targetMetal);
-    const showAllBank = document.getElementById('showAllBank')?.checked;
-    const showAllCart = document.getElementById('showAllCart')?.checked;
+    const isTargetEmpty = !targetMetal || targetMetal.trim() === '';
+
+    const showAllBankEl = document.getElementById('showAllBank');
+    const showAllCartEl = document.getElementById('showAllCart');
 
     const searchBank = (document.getElementById('searchBank')?.value || "").toLowerCase();
     const searchCart = (document.getElementById('searchCart')?.value || "").toLowerCase();
+
+    // Automatically uncheck the toggle if the search box is not empty
+    if (searchBank !== "" && showAllBankEl) showAllBankEl.checked = false;
+    if (searchCart !== "" && showAllCartEl) showAllCartEl.checked = false;
+
+    // --- NEW: Automatically toggle OFF "Show All" when a new target material is detected
+    if (targetMetal !== _lastTargetForVisibility) {
+        if (!isTargetEmpty) {
+            if (showAllBankEl) showAllBankEl.checked = false;
+            if (showAllCartEl) showAllCartEl.checked = false;
+        }
+        _lastTargetForVisibility = targetMetal;
+    }
+
+    // If target is empty, we force "Show All" to be checked (if they aren't searching) and disable the toggle.
+    if (isTargetEmpty) {
+        if (showAllBankEl) {
+            showAllBankEl.disabled = true;
+            if (searchBank === "") showAllBankEl.checked = true;
+        }
+        if (showAllCartEl) {
+            showAllCartEl.disabled = true;
+            if (searchCart === "") showAllCartEl.checked = true;
+        }
+    } else {
+        if (showAllBankEl) showAllBankEl.disabled = false;
+        if (showAllCartEl) showAllCartEl.disabled = false;
+    }
+
+    const relevant = isTargetEmpty ? new Set() : getRelevantItems(targetMetal);
+    const showAllBank = showAllBankEl?.checked;
+    const showAllCart = showAllCartEl?.checked;
+
     const t = i18n[state.currentLang] || i18n['en'];
 
     let totalVisibleBank = 0;
@@ -203,8 +239,8 @@ export function updateVisibility(targetMetal) {
                 if (searchBank !== "") {
                     shouldShow = matchBankSearch;
                 } else {
-                    shouldShow = (showAllBank || relevant.has(k) || isActive);
-                    if (!showAllBank && k === targetMetal) shouldShow = false;
+                    shouldShow = (showAllBank || isTargetEmpty || relevant.has(k) || isActive);
+                    if (!showAllBank && !isTargetEmpty && k === targetMetal) shouldShow = false;
                 }
 
                 rowB.style.display = shouldShow ? 'grid' : 'none';
@@ -218,7 +254,7 @@ export function updateVisibility(targetMetal) {
                     shouldShow = matchCartSearch;
                 } else {
                     shouldShow = (showAllCart || relevant.has(k) || isActive);
-                    if (!showAllCart && k === targetMetal) shouldShow = false;
+                    if (!showAllCart && !isTargetEmpty && k === targetMetal) shouldShow = false;
                 }
 
                 rowM.style.display = shouldShow ? 'block' : 'none';
@@ -238,4 +274,27 @@ export function updateVisibility(targetMetal) {
 
     const cartEmpty = document.getElementById('cartSearchEmpty');
     if (cartEmpty) cartEmpty.style.display = (searchCart !== '' && totalVisibleCart === 0) ? 'block' : 'none';
+
+    const marketContainer = document.getElementById('marketContainer');
+    const btnAutoFill = document.getElementById('ui_btnAutoFill');
+    const btnClearCart = document.getElementById('ui_btnClearCart');
+    const cartSidebarBtn = document.querySelector('.btn-sidebar[data-modal="cartModal"]');
+
+    if (isTargetEmpty) {
+        if (marketContainer) {
+            marketContainer.style.opacity = '0.4';
+            marketContainer.style.pointerEvents = 'none';
+        }
+        if (btnAutoFill) btnAutoFill.disabled = true;
+        if (btnClearCart) btnClearCart.disabled = true;
+        if (cartSidebarBtn) cartSidebarBtn.disabled = true;
+    } else {
+        if (marketContainer) {
+            marketContainer.style.opacity = '1';
+            marketContainer.style.pointerEvents = 'auto';
+        }
+        if (btnAutoFill) btnAutoFill.disabled = false;
+        if (btnClearCart) btnClearCart.disabled = false;
+        if (cartSidebarBtn) cartSidebarBtn.disabled = false;
+    }
 }

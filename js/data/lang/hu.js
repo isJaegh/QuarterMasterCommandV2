@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Keresés...",
     searchEmptyState: "Keressen egy anyagot a gyártási részletek megtekintéséhez.",
     searchNotFound: "Nem található ilyen nevű anyag.",
-    targetMetalLabel: "Célanyag:"
+    targetMetalLabel: "Célanyag:",
+    tabMaterials: "Anyagok",
+    tabLegend: "Jelmagyarázat",
+    modByproductsTitle: "Kinyert melléktermékek",
+    usesProducedFrom: "ebből készül:",
+    usesCanMake: "ehhez használható:",
+    usesSetTarget: "Beállítás célként",
+    usesNone: "Nincs ismert recept vagy forrás ehhez:",
+    usesDetails: "Részletek",
+    tabMaterials: "Anyagok",
+    tabLegend: "Jelmagyarázat",
+    usesTitle: "Anyag részletei",
+    btnClose: "Bezárás",
+    modByproductsTitle: "Kinyert melléktermékek",
+    usesProducedFrom: "ebből készül:",
+    usesCanMake: "ehhez használható:",
+    usesSetTarget: "Beállítás célként",
+    usesNone: "Nincs ismert recept vagy forrás ehhez:"
 };

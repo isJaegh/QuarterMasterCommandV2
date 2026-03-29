@@ -124,12 +124,9 @@ export function copyDiscord() {
 }
 
 export async function sendToDiscord() {
-    const t = i18n[state.currentLang] || i18n['en'];
-    const webhookUrl = document.getElementById('webhookUrl').value;
-    const WEBHOOK_RE = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/[\w-]+$/;
-    if (!webhookUrl || !WEBHOOK_RE.test(webhookUrl)) {
-        showToast(t.errWebhook || "Invalid Webhook URL", 'error');
-        openModal('settingsModal');
+    const webhookUrl = document.getElementById('webhookUrl')?.value;
+    if (!webhookUrl || !webhookUrl.startsWith('https://discord.com/api/webhooks/')) {
+        showToast("Enter a valid Discord Webhook URL in settings.", 'error');
         return;
     }
 
@@ -138,13 +135,18 @@ export async function sendToDiscord() {
     try {
         const response = await fetch(webhookUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: msg })
+            headers: { 'Content-Type': 'application/json' }, // Required header
+            body: JSON.stringify({ content: msg.length > 2000 ? msg.substring(0, 1996) + "..." : msg }) // Payload must be JSON stringified
         });
 
-        if (response.ok) showToast(t.sucSend || "Order dispatched to Discord!", 'success');
-        else showToast((t.errSend || "Failed to send.") + ` Status: ${response.status}`, 'error');
-    } catch (e) {
-        showToast((t.errSend || "Failed to send.") + " " + e.message, 'error');
+        if (response.ok) {
+            showToast("Order sent to Discord!", 'success');
+        } else {
+            const data = await response.json();
+            showToast(`Discord Error: ${data.message}`, 'error');
+        }
+    } catch (err) {
+        showToast("Network failure. Check your console.", 'error');
+        console.error("Discord Webhook Error:", err);
     }
 }

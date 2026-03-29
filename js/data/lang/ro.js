@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Căutare...",
     searchEmptyState: "Căutați un material pentru a vedea detaliile de producție.",
     searchNotFound: "Niciun material găsit cu acest nume.",
-    targetMetalLabel: "Material Țintă:"
+    targetMetalLabel: "Material Țintă:",
+    tabMaterials: "Materiale",
+    tabLegend: "Legendă",
+    modByproductsTitle: "Produse secundare recuperate",
+    usesProducedFrom: "este produs din:",
+    usesCanMake: "poate fi folosit pentru a face:",
+    usesSetTarget: "Setați ca țintă",
+    usesNone: "Nu există rețete sau surse cunoscute pentru",
+    usesDetails: "Detalii",
+    tabMaterials: "Materiale",
+    tabLegend: "Legendă",
+    usesTitle: "Detalii material",
+    btnClose: "Închide",
+    modByproductsTitle: "Produse secundare recuperate",
+    usesProducedFrom: "este produs din:",
+    usesCanMake: "poate fi folosit pentru a face:",
+    usesSetTarget: "Setați ca țintă",
+    usesNone: "Nu există rețete sau surse cunoscute pentru"
 };

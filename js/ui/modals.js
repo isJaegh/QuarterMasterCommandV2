@@ -6,6 +6,7 @@ import { i18n } from '../data/lang.js';
 import { state } from '../state/store.js';
 import { CATEGORIES } from '../data/data.js';
 import { getItemName } from '../utils/format.js';
+import { isProduceable } from './lookup.js';
 
 let _activeModal = null;
 
@@ -64,8 +65,13 @@ export function openModal(modalId) {
                 html += `<div style="margin-bottom:16px;">
                     <div class="bank-category" style="margin-bottom:6px;">${catLabel}</div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px;">`;
+                // Inside openModal(modalId) for 'helpModal'
                 cat.items.forEach(k => {
-                    html += `<span style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-card); border:1px solid var(--border); color:var(--text);">${getItemName(k, t)}</span>`;
+                    if (isProduceable(k)) {
+                        html += `<span class="material-item-link" data-key="${k}" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-card); border:1px solid var(--border); color:var(--text); cursor:pointer;">${getItemName(k, t)}</span>`;
+                    } else {
+                        html += `<span style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-card); border:1px solid var(--border); color:var(--text); opacity:0.45; cursor:default;">${getItemName(k, t)}</span>`;
+                    }
                 });
                 html += `</div></div>`;
             });

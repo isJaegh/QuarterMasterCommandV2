@@ -1,14 +1,25 @@
 import { state, saveState } from '../state/store.js';
-import { CATEGORIES, getAllItems } from '../data/data.js';
+import { CATEGORIES, getAllItems, RECIPES, EXTRACTION_ROUTES, VENDOR_ITEMS } from '../data/data.js';
 import { i18n } from '../data/lang.js';
 import { renderBankTable } from '../ui/bank.js';
 import { renderMarketTable, updateVisibility } from '../ui/market.js';
 import { handlePipelineChange, clearPipelineProgress, updatePipelineVisuals, updateFocusView, navFocus } from './pipeline.js';
-import { resolveTree, resolveExtractions } from './engine.js';
+import { resolveTree, resolveExtractions, MULTI_SOURCES } from './engine.js';
 import { closeModal, openModal } from '../ui/modals.js';
 import { getMultiplier, getItemName } from '../utils/format.js';
 
-let timer = null; // Used for debouncing the run() function
+let timer = null;
+
+// Helper function to determine if a material can be crafted/extracted
+export function isProduceable(k) {
+    if (RECIPES[k]) return true;
+    for (const src of Object.keys(EXTRACTION_ROUTES)) {
+        for (const route of Object.values(EXTRACTION_ROUTES[src])) {
+            if (route.yields && route.yields[k]) return true;
+        }
+    }
+    return false;
+}
 
 export function handleModeChange() {
     const mode = document.getElementById('mode').value;
@@ -58,6 +69,9 @@ export function run() {
 export function calculateMax() {
     const t = i18n[state.currentLang] || i18n['en'];
     const targetMetal = document.getElementById('targetMetal').value;
+
+    if (!targetMetal) return;
+
     const mode = document.getElementById('mode').value;
     const mult = getMultiplier(mode);
     let originalTarget = Number(document.getElementById('targetAmount').value) || 0;
@@ -199,15 +213,24 @@ function renderEmpty({ t, targetMetal }) {
     state.byproductsRaw = {};
     state.pureDeficits = {};
 
-    if (document.getElementById('bpContainer')) document.getElementById('bpContainer').style.display = 'none';
+    if (document.getElementById('mod_mfgPipe')) document.getElementById('mod_mfgPipe').style.display = 'none';
+    if (document.getElementById('mod_byproducts')) document.getElementById('mod_byproducts').style.display = 'none';
 
-    // Reset Progress Bars and Texts
-    if (document.getElementById('gatherProgressBar')) document.getElementById('gatherProgressBar').style.width = '0%';
+    const btnMax = document.getElementById('ui_btnMaxText');
+    if (btnMax) btnMax.disabled = true;
+
+    if (document.getElementById('gatherProgressBar')) {
+        document.getElementById('gatherProgressBar').style.width = '0%';
+        document.getElementById('gatherProgressBar').style.backgroundColor = 'transparent';
+    }
     if (document.getElementById('gatherProgressText')) {
         document.getElementById('gatherProgressText').innerText = '0%';
         document.getElementById('gatherProgressText').style.color = 'var(--text)';
     }
-    if (document.getElementById('projectProgressBar')) document.getElementById('projectProgressBar').style.width = '0%';
+    if (document.getElementById('projectProgressBar')) {
+        document.getElementById('projectProgressBar').style.width = '0%';
+        document.getElementById('projectProgressBar').style.backgroundColor = 'transparent';
+    }
     if (document.getElementById('projectProgressText')) {
         document.getElementById('projectProgressText').innerText = "0%";
         document.getElementById('projectProgressText').style.color = "var(--text)";
@@ -293,7 +316,9 @@ function renderLogistics({ mode, t, targetMetal, mult, showBp, bank, purchased, 
             let totalNeeded = (grossExtractions.raw[k] || 0) + (grossTree.intermediates[k] || 0) + (grossExtractions.extracted[k] || 0);
 
             if (totalNeeded > 0 && k !== targetMetal) {
+                let itemName = getItemName(k, t);
                 let missingAmt = finalDeficits[k] || 0;
+
                 if (actualExtractions.raw[k]) totalGatherUnits += actualExtractions.raw[k];
                 let isComplete = missingAmt <= 0;
                 if (isComplete) missingAmt = 0;
@@ -301,25 +326,35 @@ function renderLogistics({ mode, t, targetMetal, mult, showBp, bank, purchased, 
                 const fmtVal = mode === 'stacks' ? (missingAmt / 10000).toFixed(2) + " Stk" : missingAmt.toLocaleString();
                 let amountAcquired = totalNeeded - missingAmt;
                 let progressPct = totalNeeded > 0 ? Math.min(100, Math.max(0, (amountAcquired / totalNeeded) * 100)) : 0;
+
                 totalAcquiredUnits += amountAcquired;
                 totalNeededUnits += totalNeeded;
 
-                let itemName = getItemName(k, t);
+                let hueVal = Math.max(0, Math.min(120, Math.round((progressPct / 100) * 120)));
+                let dynColor = `hsl(${hueVal}, 85%, 45%)`;
+
+                // Render as static text so it is not clickable in Missing Components
+                const isVendorSourced = VENDOR_ITEMS.has(k) && state.userSourcePrefs && state.userSourcePrefs[k] === 'vendor';
+                const vendorTag = isVendorSourced
+                    ? ` <span style="font-size:0.75em; color:var(--accent); font-weight:normal;">[${(t.vendorSource || 'Magic Vendor')}]</span>`
+                    : '';
+                let itemNameStr = `<span style="font-weight:bold; color:var(--text);">${itemName}${vendorTag}</span>`;
+                let itemNameCompleteStr = `<span style="font-weight:bold; color:var(--text-dim); text-decoration: line-through; opacity: 0.6;">${itemName}</span>`;
 
                 if (isComplete) {
-                    catHtml += `<div class="logistics-item" style="border-left-color: var(--success); --prog: 100%; --hue: 120;">
-                        <span style="font-weight:bold; color:var(--text-dim); text-decoration: line-through; opacity: 0.6;">${itemName}</span>
+                    catHtml += `<div class="logistics-item" style="border-left-color: ${dynColor}; --prog: 100%; --hue: 120;">
+                        ${itemNameCompleteStr}
                         <div style="display: flex; align-items: center; justify-content: flex-end;">
                             <span style="color:var(--text-dim); font-weight:normal; margin-right: 12px; text-align: right; text-decoration: line-through; opacity: 0.6;">${fmtVal}</span>
-                            <span style="color:var(--success); font-weight: bold; text-align: right; min-width: 40px;">100%</span>
+                            <span style="color:${dynColor}; font-weight: bold; text-align: right; min-width: 40px;">100%</span>
                         </div>
                     </div>`;
                 } else {
-                    catHtml += `<div class="logistics-item" style="border-left-color: var(--accent); --prog: ${progressPct}%; --hue: 45;">
-                        <span style="font-weight:bold; color:var(--text);">${itemName}</span>
+                    catHtml += `<div class="logistics-item" style="border-left-color: ${dynColor}; --prog: ${progressPct}%; --hue: ${hueVal};">
+                        ${itemNameStr}
                         <div style="display: flex; align-items: center; justify-content: flex-end;">
                             <span style="color:var(--text-dim); font-weight:normal; margin-right: 12px; text-align: right;">${fmtVal}</span>
-                            <span style="color:var(--accent); font-weight: bold; text-align: right; min-width: 40px;">${progressPct.toFixed(0)}%</span>
+                            <span style="color:${dynColor}; font-weight: bold; text-align: right; min-width: 40px;">${progressPct.toFixed(0)}%</span>
                         </div>
                     </div>`;
                 }
@@ -335,7 +370,8 @@ function renderLogistics({ mode, t, targetMetal, mult, showBp, bank, purchased, 
     document.getElementById('statStacks').innerText = (totalGatherUnits / 10000).toFixed(2);
 
     const gatherOverallPct = totalNeededUnits > 0 ? (totalAcquiredUnits / totalNeededUnits) * 100 : 100;
-    const gatherColor = gatherOverallPct >= 100 && totalNeededUnits > 0 ? 'var(--success)' : 'var(--accent)';
+    let gatherHue = Math.max(0, Math.min(120, Math.round((gatherOverallPct / 100) * 120)));
+    const gatherColor = totalNeededUnits > 0 ? `hsl(${gatherHue}, 85%, 45%)` : 'var(--success)';
 
     if (document.getElementById('gatherProgressBar')) {
         document.getElementById('gatherProgressBar').style.width = gatherOverallPct + '%';
@@ -347,8 +383,11 @@ function renderLogistics({ mode, t, targetMetal, mult, showBp, bank, purchased, 
     }
 }
 
-function renderPipeline({ t, crafters, showBp }) {
+function renderPipeline({ t, mode, crafters, showBp }) {
     const perCr = crafters > 1 ? ` <span style="color:var(--warning); font-size:0.8em;">${t.perCrafter || '(Per Crafter)'}</span>` : "";
+
+    const modPipe = document.getElementById('mod_mfgPipe');
+    if (modPipe) modPipe.style.display = '';
 
     let outputHTML = state.pipelineStepsRaw.map((stepObj, index) => {
         let isCompleted = state.completedSteps.includes(index);
@@ -365,13 +404,19 @@ function renderPipeline({ t, crafters, showBp }) {
             return `<span class="highlight">${y.amount.toLocaleString()} ${yName}</span>`;
         }).join(', ') : "";
 
-        let bpHtml = "";
-        if (showBp) {
-            let bpYieldsStr = (stepObj.byproducts && stepObj.byproducts.length > 0) ? stepObj.byproducts.map(y => {
-                let yName = getItemName(y.item, t);
-                return `${y.amount.toLocaleString()} ${yName}`;
-            }).join(', ') : (t.none || "None");
-            bpHtml = `<br><span style="color:var(--text-dim); font-weight:bold;">${t.stepByproducts || 'Byproducts:'}</span> <span style="color:var(--text-dim);">${bpYieldsStr}</span>`;
+        let sourceHtml = '';
+        if (stepObj.extractedItems && stepObj.extractedItems.length > 0) {
+            let primaryItem = stepObj.extractedItems[0];
+            if (MULTI_SOURCES[primaryItem]) {
+                let btns = MULTI_SOURCES[primaryItem].map(src => {
+                    let activeClass = src === stepObj.source ? 'active' : '';
+                    let srcName = src === 'vendor'
+                        ? (t.vendorSource || 'Magic Vendor')
+                        : getItemName(src, t);
+                    return `<button class="btn-route source-toggle-btn ${activeClass}" data-item="${primaryItem}" data-source="${src}">Source: ${srcName}</button>`;
+                }).join('');
+                sourceHtml = `<div class="route-choices" style="margin-top: 4px; padding-bottom: 6px; border-bottom: 1px dashed var(--border);">${btns}</div>`;
+            }
         }
 
         let routeHtml = '';
@@ -400,31 +445,46 @@ function renderPipeline({ t, crafters, showBp }) {
                 <span style="color:var(--text-dim); font-weight:bold; margin-right:5px;">${t.stepPrefix || 'Step'} ${index + 1}.</span>${modAction}${perCr}
             </div>
             <div style="margin-top: 6px; font-size: 11px; padding-left: 28px;">
-                <span style="color:var(--success); font-weight:bold;">${t.stepYieldsMain || 'Yields:'}</span> ${mainYieldsStr}${bpHtml}
+                <span style="color:var(--success); font-weight:bold;">${t.stepYieldsMain || 'Yields:'}</span> ${mainYieldsStr}
             </div>
-            <div style="padding-left: 28px;">${routeHtml}</div>
+            <div style="padding-left: 28px;">${sourceHtml}${routeHtml}</div>
         </div>`;
     }).join('');
 
-    let byproductsString = "";
-    Object.keys(state.byproductsRaw).forEach(k => {
-        if (state.byproductsRaw[k] > 0) {
-            let itemName = getItemName(k, t);
-            byproductsString += `<div style="display:flex; justify-content:space-between; margin-bottom: 2px; font-size: 13px;">
-                <span>${itemName}</span>
-                <span style="color: var(--accent); font-weight: bold;">${state.byproductsRaw[k].toLocaleString()}</span>
-            </div>`;
+    document.getElementById('stepsOutput').innerHTML = outputHTML;
+
+    let bpHTML = '';
+    CATEGORIES.forEach(cat => {
+        let catHtml = '';
+        cat.items.forEach(k => {
+            if (state.byproductsRaw[k] > 0) {
+                let itemName = getItemName(k, t);
+                const fmtVal = mode === 'stacks' ? (state.byproductsRaw[k] / 10000).toFixed(2) + " Stk" : state.byproductsRaw[k].toLocaleString();
+
+                let nameHtml = `<span style="font-weight:bold; color:var(--text);"><span class="clickable-byproduct" data-byproduct="${k}" style="cursor:pointer; color:var(--accent); text-decoration:underline;" title="View material details">${itemName}</span></span>`;
+
+                catHtml += `<div class="logistics-item" style="border-left-color: var(--border); --prog: 0%;">
+                    ${nameHtml}
+                    <div style="display: flex; align-items: center; justify-content: flex-end;">
+                        <span style="color:var(--text); font-weight:bold; text-align: right;">${fmtVal}</span>
+                    </div>
+                </div>`;
+            }
+        });
+        if (catHtml !== '') {
+            let catName = (t.categories && t.categories[cat.id]) ? t.categories[cat.id] : cat.id;
+            bpHTML += `<div class="bank-category" style="margin-top:10px; margin-bottom:5px;">${catName}</div>` + catHtml;
         }
     });
 
-    if (byproductsString !== "") {
-        document.getElementById('bpOutput').innerHTML = byproductsString;
-        document.getElementById('bpContainer').style.display = showBp ? 'block' : 'none';
+    const modBp = document.getElementById('mod_byproducts');
+    if (bpHTML !== "" && showBp) {
+        document.getElementById('bpOutput').innerHTML = bpHTML;
+        if (modBp) modBp.style.display = '';
     } else {
-        document.getElementById('bpContainer').style.display = 'none';
+        if (modBp) modBp.style.display = 'none';
     }
 
-    document.getElementById('stepsOutput').innerHTML = outputHTML;
     updatePipelineVisuals();
     if (state.pipelineViewMode === 'focus') updateFocusView();
 }
@@ -434,10 +494,15 @@ export function calculate() {
     document.getElementById('stepsOutput')?.classList.remove('calculating');
     const inputs = readInputs();
 
+    const btnMax = document.getElementById('ui_btnMaxText');
+
     if (!inputs.targetMetal || inputs.targetRaw <= 0) {
+        if (btnMax) btnMax.disabled = true;
         renderEmpty(inputs);
         return;
     }
+
+    if (btnMax) btnMax.disabled = false;
 
     const results = runCalculations(inputs);
     renderLogistics(inputs, results);
@@ -446,18 +511,13 @@ export function calculate() {
     saveState();
 }
 
-// ----------------------------------------------------------------------------
-// NEW: DYNAMICALLY UPDATE LOGISTICS UPON STEP COMPLETION
-// ----------------------------------------------------------------------------
 export function updateLogisticsOnly() {
     const inputs = readInputs();
     if (!inputs.targetMetal || inputs.targetRaw <= 0) return;
 
-    // We calculate the required totals
     const grossTree = resolveTree(inputs.targetMetal, inputs.targetRaw * inputs.mult, {}, inputs.mR);
     const grossExtractions = resolveExtractions(grossTree.deficits, inputs.mE, inputs.mM, {});
 
-    // We calculate deficits based on the CURRENT bank (which now includes the yielded steps)
     const virtualBank = {};
     Object.keys(inputs.bank).forEach(k => virtualBank[k] = inputs.bank[k] + inputs.purchased[k]);
 
@@ -473,6 +533,100 @@ export function updateLogisticsOnly() {
         if (missing > 0) finalDeficits[k] = missing;
     });
 
-    // Re-render ONLY the Missing Components section
     renderLogistics(inputs, { grossTree, grossExtractions, actualExtractions, finalDeficits });
+}
+
+export function processByproduct(k) {
+    const uses = new Set();
+    const sources = new Set();
+
+    for (const [outputItem, routes] of Object.entries(RECIPES)) {
+        for (const rec of Object.values(routes)) {
+            if (rec.primary === k || rec.cat1 === k || rec.cat2 === k || rec.ore === k || rec.cat === k) {
+                uses.add(outputItem);
+            }
+        }
+    }
+
+    if (EXTRACTION_ROUTES[k]) {
+        for (const route of Object.values(EXTRACTION_ROUTES[k])) {
+            for (const yItem of Object.keys(route.yields)) {
+                if (yItem !== k) uses.add(yItem);
+            }
+        }
+    }
+
+    if (RECIPES[k]) {
+        for (const rec of Object.values(RECIPES[k])) {
+            if (rec.type === 'alloy' && rec.primary) sources.add(rec.primary);
+            if (rec.type === 'smelt' && rec.ore) sources.add(rec.ore);
+        }
+    }
+
+    for (const [sourceItem, routes] of Object.entries(EXTRACTION_ROUTES)) {
+        for (const route of Object.values(routes)) {
+            if (route.yields && route.yields[k]) {
+                sources.add(sourceItem);
+            }
+        }
+    }
+
+    const usesArr = Array.from(uses);
+    const sourcesArr = Array.from(sources);
+    const t = i18n[state.currentLang] || i18n['en'];
+    const itemName = getItemName(k, t);
+
+    let strProducedFrom = t.usesProducedFrom || "is produced from:";
+    let strCanMake = t.usesCanMake || "can be used to make:";
+    let strSetTarget = t.usesSetTarget || "Set as Target";
+    let strNoRecipes = t.usesNone || "No known recipes or sources for";
+
+    let html = '';
+
+    if (sourcesArr.length > 0) {
+        html += `<p style="color:var(--text-dim); margin-top:0; margin-bottom: 10px;"><strong>${itemName}</strong> ${strProducedFrom}</p>`;
+        html += `<div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">`;
+        sourcesArr.sort((a, b) => getItemName(a, t).localeCompare(getItemName(b, t))).forEach(u => {
+            let uName = getItemName(u, t);
+
+            let uNameHtml = `<span class="clickable-byproduct" data-byproduct="${u}" style="font-weight:bold; color:var(--accent); cursor:pointer; text-decoration:underline; font-size: 14px;" title="View material details">${uName}</span>`;
+
+            let btnHtml = isProduceable(u)
+                ? `<button class="btn-mini btn-route set-target-btn" data-target-item="${u}" data-target-name="${uName.replace(/"/g, '&quot;')}">${strSetTarget}</button>`
+                : '';
+
+            html += `<div class="market-card" style="margin-bottom:0; padding: 10px 15px; display:flex; justify-content:space-between; align-items:center;">
+                ${uNameHtml}
+                ${btnHtml}
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if (usesArr.length > 0) {
+        html += `<p style="color:var(--text-dim); margin-top:0; margin-bottom: 10px;"><strong>${itemName}</strong> ${strCanMake}</p>`;
+        html += `<div style="display:flex; flex-direction:column; gap:8px;">`;
+        usesArr.sort((a, b) => getItemName(a, t).localeCompare(getItemName(b, t))).forEach(u => {
+            let uName = getItemName(u, t);
+
+            let uNameHtml = `<span class="clickable-byproduct" data-byproduct="${u}" style="font-weight:bold; color:var(--accent); cursor:pointer; text-decoration:underline; font-size: 14px;" title="View material details">${uName}</span>`;
+
+            let btnHtml = isProduceable(u)
+                ? `<button class="btn-mini btn-route set-target-btn" data-target-item="${u}" data-target-name="${uName.replace(/"/g, '&quot;')}">${strSetTarget}</button>`
+                : '';
+
+            html += `<div class="market-card" style="margin-bottom:0; padding: 10px 15px; display:flex; justify-content:space-between; align-items:center;">
+                ${uNameHtml}
+                ${btnHtml}
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if (usesArr.length === 0 && sourcesArr.length === 0) {
+        html += `<p style="color:var(--text-dim); margin-top:0;">${strNoRecipes} <strong>${itemName}</strong>.</p>`;
+    }
+
+    document.getElementById('usesModalBody').innerHTML = html;
+    openModal('usesModal');
 }

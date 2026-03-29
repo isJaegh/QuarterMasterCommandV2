@@ -2,7 +2,7 @@
 // QUARTERMASTER COMMAND - SERVICE WORKER
 // ============================================================================
 
-const CACHE_NAME = 'qm-cache-v14'; // Bumped version to force a cache update
+const CACHE_NAME = 'qm-cache-v17'; // Bumped version to force a cache update
 
 // The exact paths to all the new modular files
 const urlsToCache = [
@@ -22,10 +22,29 @@ const urlsToCache = [
     './js/ui/bank.js',
     './js/ui/market.js',
     './js/ui/theme.js',
+    './js/ui/lookup.js',
     './js/network/discord.js',
     './js/utils/format.js',
-    './js/utils/clipboard.js'
-    // Add any font files or image paths here if you add them later
+    './js/utils/clipboard.js',
+    './js/utils/toast.js',
+    './js/utils/confirm.js',
+    './js/data/langBase.js',
+    './js/data/lang/en.js',
+    './js/data/lang/fr.js',
+    './js/data/lang/de.js',
+    './js/data/lang/es.js',
+    './js/data/lang/it.js',
+    './js/data/lang/pt.js',
+    './js/data/lang/ru.js',
+    './js/data/lang/uk.js',
+    './js/data/lang/pl.js',
+    './js/data/lang/cs.js',
+    './js/data/lang/hu.js',
+    './js/data/lang/ro.js',
+    './js/data/lang/sv.js',
+    './js/data/lang/fi.js',
+    './js/data/lang/tr.js',
+    './js/data/lang/ar.js'
 ];
 
 // 1. Install Event: Cache all essential files

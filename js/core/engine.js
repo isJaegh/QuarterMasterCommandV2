@@ -1,7 +1,29 @@
-import { RECIPES, EXTRACT_MAP, EXTRACTION_ROUTES } from '../data/data.js';
+import { RECIPES, EXTRACT_MAP, EXTRACTION_ROUTES, VENDOR_ITEMS } from '../data/data.js';
 import { i18n } from '../data/lang.js';
 import { state } from '../state/store.js';
 import { getItemName } from '../utils/format.js';
+
+// Analyze Extraction Routes dynamically to find any material that has Multiple Sources (e.g. Malachite)
+export const MULTI_SOURCES = {};
+for (const [src, routes] of Object.entries(EXTRACTION_ROUTES)) {
+    for (const r of Object.values(routes)) {
+        for (const yItem of Object.keys(r.yields)) {
+            if (!MULTI_SOURCES[yItem]) MULTI_SOURCES[yItem] = new Set();
+            MULTI_SOURCES[yItem].add(src);
+        }
+    }
+}
+for (const k of Object.keys(MULTI_SOURCES)) {
+    MULTI_SOURCES[k] = Array.from(MULTI_SOURCES[k]);
+    if (MULTI_SOURCES[k].length < 1) delete MULTI_SOURCES[k];
+}
+
+// Add Magic Vendor as an additional source for vendor-purchasable items
+for (const item of VENDOR_ITEMS) {
+    if (!MULTI_SOURCES[item]) MULTI_SOURCES[item] = [];
+    if (!MULTI_SOURCES[item].includes('vendor')) MULTI_SOURCES[item].push('vendor');
+}
+
 export function getPrimaryChain(targetMetal) {
     let chain = [targetMetal];
     let current = targetMetal;
@@ -80,17 +102,49 @@ export function resolveTree(targetMetal, amount, bankData, mR) {
 
         let availableRoutes = Object.keys(recipe);
         let stepKey = `recipe_${item}`;
-        let rKey = state.userPathChoices[stepKey] || availableRoutes[0];
-        if (!recipe[rKey]) rKey = availableRoutes[0];
 
         let routeStats = [];
         if (availableRoutes.length > 1) {
-            routeStats = availableRoutes.map(rName => ({
-                name: rName,
-                isBestYield: false,
-                isMaxYield: false,
-                isRegionLocked: false
-            }));
+            routeStats = availableRoutes.map(rName => {
+                let recObj = recipe[rName];
+                let totalCost = 0;
+
+                if (recObj.type === 'alloy') {
+                    let primaryNeeded = Math.ceil(missing / (0.7 * mR));
+                    let cat1Needed = Math.ceil(primaryNeeded * 0.5);
+                    let cat2Needed = Math.ceil(primaryNeeded * 0.5);
+                    totalCost = primaryNeeded + cat1Needed + cat2Needed;
+                } else if (recObj.type === 'smelt') {
+                    let oreNeeded = Math.ceil(missing / (recObj.oreYield * mR));
+                    let catNeeded = Math.ceil(oreNeeded * recObj.catReq);
+                    totalCost = oreNeeded + catNeeded;
+                }
+
+                let isRegionLocked = rName.includes('Blast Furnace') || rName.includes('Fabricula') || rName.includes('Greater Natorus') || rName.includes('Natorus') || rName.includes('Grizzly') || rName.includes('Hearth');
+
+                return {
+                    name: rName,
+                    totalCost: totalCost,
+                    isBestYield: false,
+                    isMaxYield: false,
+                    isRegionLocked: isRegionLocked
+                };
+            });
+
+            let minTotal = Math.min(...routeStats.map(s => s.totalCost));
+            routeStats.forEach(s => {
+                s.isBestYield = (s.totalCost === minTotal);
+                s.isMaxYield = (s.totalCost === minTotal);
+            });
+        }
+
+        let rKey = state.userPathChoices[stepKey];
+        if (!rKey || !availableRoutes.includes(rKey)) {
+            if (state.globalRoutePref === 'efficient' || state.globalRoutePref === 'yield') {
+                let best = routeStats.find(s => s.isBestYield);
+                if (best) rKey = best.name;
+            }
+            if (!rKey) rKey = availableRoutes[0];
         }
 
         let recObj = recipe[rKey];
@@ -124,8 +178,9 @@ export function resolveTree(targetMetal, amount, bankData, mR) {
 
             let itemNameOre = getItemName(recObj.ore, t);
             let itemNameCat = getItemName(recObj.cat, t);
+            let machineName = rKey.split(' (')[0];
 
-            let htmlStr = `<strong>${vSmelt} <span class="highlight">${oreNeeded.toLocaleString()} ${itemNameOre}</span> ${vInMachine} Furnace ${vWith} <span class="highlight">${catNeeded.toLocaleString()} ${itemNameCat}</span></strong>`;
+            let htmlStr = `<strong>${vSmelt} <span class="highlight">${oreNeeded.toLocaleString()} ${itemNameOre}</span> ${vInMachine} ${machineName} ${vWith} <span class="highlight">${catNeeded.toLocaleString()} ${itemNameCat}</span></strong>`;
 
             steps.unshift({
                 htmlAction: htmlStr,
@@ -151,19 +206,25 @@ export function resolveExtractions(deficits, mE, mM, bankData) {
     let bp = {};
     let extSteps = [];
 
+    if (!state.userSourcePrefs) state.userSourcePrefs = {};
     let localExtractMap = { ...EXTRACT_MAP };
+    Object.keys(state.userSourcePrefs).forEach(k => {
+        if (state.userSourcePrefs[k]) localExtractMap[k] = state.userSourcePrefs[k];
+    });
 
     const sequence = [
-        'skadite', 'electrum', 'gemmetal', 'sanguinite', 'almine', 'acronite', 'lupium',
-        'pi', 'cuprum', 'coke', 'pitch', 'ichor',
-        'bo', 'pyroxene', 'galbinum', 'redbleckblende', 'maalite', 'pyropite', 'aabam', 'calamine', 'silver', 'chalkglance', 'waterstone',
-        'bleck', 'bleckblende', 'jadeite', 'malachite', 'sp', 'granumpowder', 'amarantum', 'flakestone', 'calspar', 'coal', 'cp', 'cinnabar', 'magmum', 'volcanicash', 'pyrite', 'gaborepowder', 'lodestonepowder', 'ritualash'
+        'skadite', 'gold', 'silver', 'almine', 'acronite', 'lupium', 'sanguinite', 'aabam', 'calamine', 'bleck',
+        'cuprum', 'pi', 'coke', 'pitch', 'ichor', 'sulfur', 'maalite', 'pyropite', 'kyanite', 'gemmetal',
+        'chalkglance', 'electrum', 'pyroxene', 'redbleckblende', 'bleckblende', 'bo',
+        'galbinum', 'amarantum', 'calspar', 'malachite', 'cinnabar', 'magmum', 'waterstone',
+        'jadeite', 'sp', 'granumpowder', 'flakestone', 'coal', 'cp', 'volcanicash', 'pyrite', 'gaborepowder', 'lodestonepowder', 'ritualash'
     ];
 
     let processing = true;
     let loopCount = 0;
 
-    while (processing && loopCount < 50) {
+    // Increased maximum loop count significantly to guarantee logic completion
+    while (processing && loopCount < 200) {
         processing = false;
         loopCount++;
 
@@ -171,6 +232,31 @@ export function resolveExtractions(deficits, mE, mM, bankData) {
             let item = sequence[i];
             if (raw[item] > 0 && localExtractMap[item]) {
                 let source = localExtractMap[item];
+
+                // If the user has chosen the Magic Vendor as the source, create a
+                // "purchase" pipeline step so that source-toggle buttons remain visible
+                // (allowing the user to switch back to an extraction route), then leave
+                // the item in `raw` so it surfaces in Missing Components as a direct deficit.
+                if (source === 'vendor') {
+                    const tl = i18n[state.currentLang] || i18n['en'];
+                    const vendorLabel = tl.vendorSource || 'Magic Vendor';
+                    const itemDisplayName = getItemName(item, tl);
+                    const vendorHtml = `<strong>${vendorLabel}: <span class="highlight">${Math.ceil(raw[item]).toLocaleString()} ${itemDisplayName}</span></strong>`;
+                    extSteps.unshift({
+                        htmlAction: vendorHtml,
+                        mainYields: [{ item: item, amount: Math.ceil(raw[item]) }],
+                        byproducts: [],
+                        stepKey: `vendor_${item}`,
+                        routeStats: [],
+                        selectedRoute: 'vendor',
+                        source: 'vendor',
+                        extractedItems: [item]
+                    });
+                    // Leave raw[item] intact — it will appear in Missing Components
+                    // as a direct purchase need. Do NOT set processing = true here.
+                    continue;
+                }
+
                 let itemsFromSource = Object.keys(raw).filter(k => raw[k] > 0 && localExtractMap[k] === source);
                 if (itemsFromSource.length === 0) continue;
 
@@ -304,7 +390,9 @@ export function resolveExtractions(deficits, mE, mM, bankData) {
                         byproducts: bpYieldsList,
                         stepKey: stepKey,
                         routeStats: validReqs,
-                        selectedRoute: routeName
+                        selectedRoute: routeName,
+                        source: source,
+                        extractedItems: itemsFromSource
                     });
 
                     processing = true;
@@ -326,10 +414,6 @@ export function resolveExtractions(deficits, mE, mM, bankData) {
     return { raw, grossRaw, bp, extSteps, extracted };
 }
 
-// ============================================================================
-// RECIPE LOOKUP — supports any item, not just target metals
-// ============================================================================
-
 let _reverseIndex = null;
 function buildReverseIndex() {
     if (_reverseIndex) return _reverseIndex;
@@ -339,12 +423,8 @@ function buildReverseIndex() {
             for (const [item, yieldRate] of Object.entries(route.yields)) {
                 if (!_reverseIndex[item]) _reverseIndex[item] = [];
                 _reverseIndex[item].push({
-                    source,
-                    routeName,
-                    action: route.action,
-                    cat: route.cat || null,
-                    catReq: route.catReq || 0,
-                    yieldRate
+                    source, routeName, action: route.action,
+                    cat: route.cat || null, catReq: route.catReq || 0, yieldRate
                 });
             }
         }
@@ -352,15 +432,9 @@ function buildReverseIndex() {
     return _reverseIndex;
 }
 
-/**
- * Returns an array of route result objects for any craftable item at a given quantity.
- * Covers refined metals (alloy/smelt via RECIPES) and all extracted/intermediate items
- * (via reverse-indexed EXTRACTION_ROUTES). Returns [] for raw materials.
- */
 export function lookupRecipe(itemKey, qty) {
     const results = [];
 
-    // 1. Refined metals — alloy or smelt recipes
     if (RECIPES[itemKey]) {
         for (const [recipeName, recObj] of Object.entries(RECIPES[itemKey])) {
             if (recObj.type === 'alloy') {
@@ -376,7 +450,6 @@ export function lookupRecipe(itemKey, qty) {
         }
     }
 
-    // 2. Extracted / intermediate items — reverse lookup through EXTRACTION_ROUTES
     const reverseIndex = buildReverseIndex();
     if (reverseIndex[itemKey]) {
         for (const route of reverseIndex[itemKey]) {

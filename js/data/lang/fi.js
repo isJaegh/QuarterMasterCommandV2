@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Hae...",
     searchEmptyState: "Etsi materiaalia nähdäksesi tuotantotiedot.",
     searchNotFound: "Tällä nimellä ei löytynyt materiaalia.",
-    targetMetalLabel: "Kohdemateriaali:"
+    targetMetalLabel: "Kohdemateriaali:",
+    tabMaterials: "Materiaalit",
+    tabLegend: "Selite",
+    modByproductsTitle: "Talteenotetut sivutuotteet",
+    usesProducedFrom: "valmistetaan:",
+    usesCanMake: "voidaan käyttää valmistamaan:",
+    usesSetTarget: "Aseta kohteeksi",
+    usesNone: "Ei tunnettuja reseptejä tai lähteitä",
+    usesDetails: "Tiedot",
+    tabMaterials: "Materiaalit",
+    tabLegend: "Selite",
+    usesTitle: "Materiaalin tiedot",
+    btnClose: "Sulje",
+    modByproductsTitle: "Talteenotetut sivutuotteet",
+    usesProducedFrom: "valmistetaan:",
+    usesCanMake: "voidaan käyttää valmistamaan:",
+    usesSetTarget: "Aseta kohteeksi",
+    usesNone: "Ei tunnettuja reseptejä tai lähteitä"
 };

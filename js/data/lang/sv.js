@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Sök...",
     searchEmptyState: "Sök efter ett material för att se produktionsdetaljer.",
     searchNotFound: "Inget material hittades med det namnet.",
-    targetMetalLabel: "Målmaterial:"
+    targetMetalLabel: "Målmaterial:",
+    tabMaterials: "Material",
+    tabLegend: "Förklaring",
+    modByproductsTitle: "Återvunna biprodukter",
+    usesProducedFrom: "produceras från:",
+    usesCanMake: "kan användas för att göra:",
+    usesSetTarget: "Sätt som mål",
+    usesNone: "Inga kända recept eller källor för",
+    usesDetails: "Detaljer",
+    tabMaterials: "Material",
+    tabLegend: "Förklaring",
+    usesTitle: "Materialdetaljer",
+    btnClose: "Stäng",
+    modByproductsTitle: "Återvunna biprodukter",
+    usesProducedFrom: "produceras från:",
+    usesCanMake: "kan användas för att göra:",
+    usesSetTarget: "Sätt som mål",
+    usesNone: "Inga kända recept eller källor för"
 };

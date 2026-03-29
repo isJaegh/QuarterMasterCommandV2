@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Cerca...",
     searchEmptyState: "Cerca un materiale per visualizzare i dettagli di produzione.",
     searchNotFound: "Nessun materiale trovato con quel nome.",
-    targetMetalLabel: "Materiale Bersaglio:"
+    targetMetalLabel: "Materiale Bersaglio:",
+    tabMaterials: "Materiali",
+    tabLegend: "Leggenda",
+    modByproductsTitle: "Sottoprodotti recuperati",
+    usesProducedFrom: "è prodotto da:",
+    usesCanMake: "può essere usato per creare:",
+    usesSetTarget: "Imposta come bersaglio",
+    usesNone: "Nessuna ricetta o fonte nota per",
+    usesDetails: "Dettagli",
+    tabMaterials: "Materiali",
+    tabLegend: "Leggenda",
+    usesTitle: "Dettagli del materiale",
+    btnClose: "Chiudi",
+    modByproductsTitle: "Sottoprodotti recuperati",
+    usesProducedFrom: "è prodotto da:",
+    usesCanMake: "può essere usato per creare:",
+    usesSetTarget: "Imposta come bersaglio",
+    usesNone: "Nessuna ricetta o fonte nota per"
 };

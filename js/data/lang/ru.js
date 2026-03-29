@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Поиск...",
     searchEmptyState: "Найдите материал, чтобы просмотреть детали производства.",
     searchNotFound: "Материал с таким названием не найден.",
-    targetMetalLabel: "Целевой Материал:"
+    targetMetalLabel: "Целевой Материал:",
+    tabMaterials: "Материалы",
+    tabLegend: "Легенда",
+    modByproductsTitle: "Полученные побочные продукты",
+    usesProducedFrom: "производится из:",
+    usesCanMake: "можно использовать для создания:",
+    usesSetTarget: "Установить как цель",
+    usesNone: "Нет известных рецептов или источников для",
+    usesDetails: "Детали",
+    tabMaterials: "Материалы",
+    tabLegend: "Легенда",
+    usesTitle: "Детали материала",
+    btnClose: "Закрыть",
+    modByproductsTitle: "Полученные побочные продукты",
+    usesProducedFrom: "производится из:",
+    usesCanMake: "можно использовать для создания:",
+    usesSetTarget: "Установить как цель",
+    usesNone: "Нет известных рецептов или источников для"
 };

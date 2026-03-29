@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://discord.com; script-src 'self'; style-src 'self' 'unsafe-inline';">
     <title>Quartermaster Command - MO2 Refining Suite</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
@@ -52,10 +51,10 @@
                     <div style="display:flex; gap:5px;">
                         <button class="btn-mini btn-accent tooltip-maxcraft" id="ui_btnMaxText">Calculate Max Craftable</button>
                     </div>
-                    <label class="tooltip-showall" style="font-size: 11px; color: var(--text-dim); cursor: pointer; display: inline-flex; align-items: center;">
-                        <input type="checkbox" id="showAllBank">
-                        <span id="ui_showAllBank">Show All Materials</span>
-                    </label>
+                    <div class="switch-row" style="margin-bottom: 0; padding: 0; border: none; background: transparent;">
+                        <div class="switch-label" style="margin-right: 8px;"><span id="ui_showAllBank">Show All Materials</span></div>
+                        <label class="theme-switch"><input type="checkbox" id="showAllBank"><span class="slider"></span></label>
+                    </div>
                 </div>
                 <div class="search-wrap">
                     <input type="text" id="searchBank" class="search-input" placeholder="Search...">
@@ -82,10 +81,10 @@
                         <button class="btn-mini btn-success" id="ui_btnAutoFill">Auto-Fill</button>
                         <button class="btn-mini btn-danger" id="ui_btnClearCart">Clear</button>
                     </div>
-                    <label class="tooltip-showall" style="font-size: 11px; color: var(--text-dim); cursor: pointer; display: inline-flex; align-items: center;">
-                        <input type="checkbox" id="showAllCart">
-                        <span id="ui_showAllCart">Show All Materials</span>
-                    </label>
+                    <div class="switch-row" style="margin-bottom: 0; padding: 0; border: none; background: transparent;">
+                        <div class="switch-label" style="margin-right: 8px;"><span id="ui_showAllCart">Show All Materials</span></div>
+                        <label class="theme-switch"><input type="checkbox" id="showAllCart"><span class="slider"></span></label>
+                    </div>
                 </div>
                 <div class="search-wrap">
                     <input type="text" id="searchCart" class="search-input" placeholder="Search...">
@@ -159,29 +158,40 @@
         </div>
     </template>
 
+    <div id="usesModal" class="modal"></div>
+    <template id="tpl_usesModal">
+        <div class="modal-content module" style="padding: 0; max-width: 450px;">
+            <div class="modal-header-sticky">
+                <h3 style="margin:0; color:var(--accent);" id="ui_usesTitle">Material Details</h3>
+                <span class="close" data-close="usesModal">&times;</span>
+            </div>
+            <div class="modal-body-scroll" id="usesModalBody">
+            </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border); text-align: right; background: var(--bg-card);">
+                <button class="btn-dispatch" id="ui_btnClose" data-close="usesModal" style="width: auto; display: inline-block; padding: 8px 16px;">Close</button>
+            </div>
+        </div>
+    </template>
+
     <div id="helpModal" class="modal"></div>
     <template id="tpl_helpModal">
         <div class="modal-content module" style="padding: 0; max-width: 600px;">
 
-            <!-- Tab bar -->
             <div class="modal-tabs">
-                <button class="tab-btn active" id="helpTabBtn_guide"     data-action="switchHelpTab" data-tab="guide"><span id="ui_tabGuide">Guide</span></button>
-                <button class="tab-btn"         id="helpTabBtn_materials" data-action="switchHelpTab" data-tab="materials"><span>Materials</span></button>
-                <button class="tab-btn"         id="helpTabBtn_legend"    data-action="switchHelpTab" data-tab="legend"><span>Legend</span></button>
+                <button class="tab-btn active" id="helpTabBtn_guide" data-action="switchHelpTab" data-tab="guide"><span id="ui_tabGuide">Guide</span></button>
+                <button class="tab-btn" id="helpTabBtn_materials" data-action="switchHelpTab" data-tab="materials"><span id="ui_tabMaterials">Materials</span></button>
+                <button class="tab-btn" id="helpTabBtn_legend" data-action="switchHelpTab" data-tab="legend"><span id="ui_tabLegend">Legend</span></button>
                 <span class="close" data-close="helpModal" style="padding: 10px 15px;">&times;</span>
             </div>
 
-            <!-- Guide tab -->
             <div id="helpTab_guide" class="tab-content active modal-body-scroll">
                 <div id="dynamicHelpContent" class="help-content"></div>
             </div>
 
-            <!-- Materials tab -->
             <div id="helpTab_materials" class="tab-content modal-body-scroll" style="display:none;">
                 <div id="helpResourcesList" style="padding: 4px;"></div>
             </div>
 
-            <!-- Legend tab -->
             <div id="helpTab_legend" class="tab-content modal-body-scroll" style="display:none;">
                 <div class="help-content">
                     <h4 style="color:var(--accent); margin:10px 0 14px 0;" id="ui_legAcronyms">Acronyms</h4>
@@ -263,6 +273,7 @@
                     <div class="input-row" style="justify-content: flex-start; gap: 10px;"><input type="checkbox" id="view_prodCmd" checked> <label id="ui_viewProdCmd">Production Command</label></div>
                     <div class="input-row" style="justify-content: flex-start; gap: 10px;"><input type="checkbox" id="view_defGather" checked> <label id="ui_viewGather">Missing Components</label></div>
                     <div class="input-row" style="justify-content: flex-start; gap: 10px;"><input type="checkbox" id="view_mfgPipe" checked> <label id="ui_viewPipe">Manufacturing Pipeline</label></div>
+                    <div class="input-row" style="justify-content: flex-start; gap: 10px;"><input type="checkbox" id="view_byproducts" checked> <label id="ui_viewByproducts">Recovered Byproducts</label></div>
                 </div>
             </div>
 
@@ -305,7 +316,10 @@
             <div class="module-body" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 15px;">
                 <div style="flex: 1; min-width: 250px;">
                     <div class="input-row" style="margin-bottom: 12px;">
-                        <label id="ui_targetMetalLabel">Search</label>
+                        <label style="display:flex; align-items:center;">
+                            <span id="ui_targetMetalLabel">Search</span>
+                            <span id="btnHelpMaterialsIcon" style="cursor:pointer; color:var(--accent); font-weight:bold; border:1px solid var(--accent); border-radius:50%; width:14px; height:14px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; margin-left:6px;" title="View Materials List">?</span>
+                        </label>
                         <div style="position: relative; width: 100%; max-width: 180px;">
                             <div class="search-wrap" style="margin-bottom: 0;">
                                 <input type="text" id="targetMetalSearch" class="search-input"
@@ -319,11 +333,15 @@
                     </div>
 
                     <div class="input-row">
-                        <label id="ui_target">Amount</label>
-                        <input type="number" id="targetAmount" value="10000" style="width: 100%; max-width: 180px;">
+                        <label id="ui_target">Amount:</label>
+                        <div style="display: flex; gap: 5px; width: 100%; max-width: 180px;">
+                            <input type="number" id="targetAmount" value="10000" style="width: 100%;">
+                            <button class="btn-sq btn-clear" id="ui_btnResetQty" title="Reset to 10000" style="margin: 0; padding: 0;">↺</button>
+                        </div>
                     </div>
+
                     <div class="input-row">
-                        <label id="ui_crafters">Crafters</label>
+                        <label id="ui_crafters">Crafters:</label>
                         <input type="number" id="crafters" value="1" style="width: 100%; max-width: 180px;">
                     </div>
                 </div>
@@ -341,7 +359,7 @@
                     </span>
                 </div>
             </div>
-            <div class="module-body" id="gatherOutput" class="logistics-grid"></div>
+            <div class="module-body logistics-grid" id="gatherOutput"></div>
         </div>
 
         <div class="module" id="mod_mfgPipe">
@@ -376,12 +394,16 @@
                 </div>
 
                 <div id="stepsOutput"></div>
+            </div>
+        </div>
 
-                <div id="bpContainer" style="display:none; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px;">
-                    <h4 style="margin: 0 0 10px 0; color: var(--accent);"><span id="ui_bpTitle">TOTAL RECOVERED BYPRODUCTS</span></h4>
-                    <div id="bpOutput"></div>
+        <div class="module" id="mod_byproducts" style="display:none;">
+            <div class="module-header" id="header_byproducts">
+                <div class="header-content">
+                    <span><span id="ui_modByproductsTitle">Recovered Byproducts</span> <span class="toggle-icon">▼</span></span>
                 </div>
             </div>
+            <div class="module-body logistics-grid" id="bpOutput" style="padding-top: 15px;"></div>
         </div>
     </div>
 

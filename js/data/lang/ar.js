@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "بحث...",
     searchEmptyState: "ابحث عن مادة لعرض تفاصيل الإنتاج.",
     searchNotFound: "لم يتم العثور على مادة بهذا الاسم.",
-    targetMetalLabel: "المادة المستهدفة:"
+    targetMetalLabel: "المادة المستهدفة:",
+    tabMaterials: "المواد",
+    tabLegend: "دليل",
+    modByproductsTitle: "المنتجات الثانوية المستردة",
+    usesProducedFrom: "يتم إنتاجه من:",
+    usesCanMake: "يمكن استخدامه لصنع:",
+    usesSetTarget: "تعيين كهدف",
+    usesNone: "لا توجد وصفات أو مصادر معروفة لـ",
+    usesDetails: "تفاصيل",
+    tabMaterials: "المواد",
+    tabLegend: "دليل",
+    usesTitle: "تفاصيل المادة",
+    btnClose: "إغلاق",
+    modByproductsTitle: "المنتجات الثانوية المستردة",
+    usesProducedFrom: "يتم إنتاجه من:",
+    usesCanMake: "يمكن استخدامه لصنع:",
+    usesSetTarget: "تعيين كهدف",
+    usesNone: "لا توجد وصفات أو مصادر معروفة لـ"
 };

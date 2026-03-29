@@ -4,8 +4,8 @@
 
 import { state, saveState, loadState, clearAll, generateShareCode, loadShareCode } from './state/store.js';
 import { openModal, closeModal, switchTab, switchHelpTab, toggleSidebar } from './ui/modals.js';
-import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleStep, updatePathChoice, handlePipelineChange } from './core/pipeline.js';
-import { calculate, handleModeChange, targetMetalChanged, calculateMax } from './core/app.js';
+import { restartPipeline, navFocus, setPipelineView, toggleGlobalPref, toggleStep, updatePathChoice, handlePipelineChange, updateSourceChoice } from './core/pipeline.js';
+import { calculate, handleModeChange, targetMetalChanged, calculateMax, processByproduct } from './core/app.js';
 import { applyColors, resetColors, toggleTheme, syncColorPickers } from './ui/theme.js';
 import { sendToDiscord, copyDiscord } from './network/discord.js';
 import { renderBankTable } from './ui/bank.js';
@@ -15,10 +15,8 @@ import { setLang } from './data/lang.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. PRE-STAMP TEMPLATES (CRITICAL FIX)
-    // We must build the HTML for the modals before calculating, otherwise the math engine
-    // crashes when trying to read settings like "mode" or "modRef" from the DOM.
-    ['settingsModal', 'prefsModal', 'bankModal', 'cartModal', 'helpModal', 'maxCraftModal'].forEach(id => {
+    // 1. PRE-STAMP TEMPLATES
+    ['settingsModal', 'prefsModal', 'bankModal', 'cartModal', 'helpModal', 'maxCraftModal', 'usesModal'].forEach(id => {
         const container = document.getElementById(id);
         const template = document.getElementById(`tpl_${id}`);
         if (container && template && container.childElementCount === 0) {
@@ -36,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el && !visible) el.classList.add('module-hidden');
     });
 
+    // Restore module collapsed state from saved state
+    Object.entries(state.collapsedState).forEach(([modId, isCollapsed]) => {
+        const el = document.getElementById(modId);
+        if (el && isCollapsed) el.classList.add('collapsed');
+    });
+
     // Restore market initialization if missing
     if (Object.keys(state.marketData).length === 0) initMarketData();
 
@@ -50,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialise the unified material search in Production Command
     initUnifiedSearch();
 
-    calculate(); // Now this runs perfectly without crashing!
+    calculate();
 
     // --- Register the Service Worker ---
     if ('serviceWorker' in navigator) {
@@ -79,14 +83,55 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 3. Handle pipeline tool route choice FIRST (Machine Selection)
-        if (target.closest('[data-action="changeRoute"]')) {
-            const btn = target.closest('[data-action="changeRoute"]');
-            updatePathChoice(null, btn.dataset.step, btn.dataset.route);
+        // --- Byproduct & Help Handlers ---
+        if (target.closest('.clickable-byproduct')) {
+            processByproduct(target.closest('.clickable-byproduct').dataset.byproduct);
             return;
         }
 
-        // 4. Handle pipeline step toggle SECOND
+        if (target.closest('.set-target-btn')) {
+            const setTargetBtn = target.closest('.set-target-btn');
+            const targetKey = setTargetBtn.dataset.targetItem;
+            const targetName = setTargetBtn.dataset.targetName;
+
+            closeModal('usesModal');
+
+            document.getElementById('targetMetal').value = targetKey;
+            document.getElementById('targetMetalSearch').value = targetName;
+            document.getElementById('targetMetal').dispatchEvent(new Event('input', { bubbles: true }));
+
+            const mode = document.getElementById('mode').value;
+            document.getElementById('targetAmount').value = mode === 'stacks' ? "1" : "10000";
+
+            setTimeout(() => {
+                calculate();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 50);
+            return;
+        }
+
+        if (target.closest('#btnHelpMaterialsIcon')) {
+            openModal('helpModal');
+            switchHelpTab('materials');
+            return;
+        }
+        // --------------------------------------
+
+        // 3. Handle Source Toggle Choice FIRST (Extraction Material Selection)
+        if (target.closest('.source-toggle-btn')) {
+            const btn = target.closest('.source-toggle-btn');
+            updateSourceChoice(e, btn.dataset.item, btn.dataset.source);
+            return; // Stops the click from bubbling up to the step card!
+        }
+
+        // 4. Handle pipeline tool route choice (Machine Selection)
+        if (target.closest('[data-action="changeRoute"]')) {
+            const btn = target.closest('[data-action="changeRoute"]');
+            updatePathChoice(null, btn.dataset.step, btn.dataset.route);
+            return; // Stops the click from bubbling up!
+        }
+
+        // 5. Handle pipeline step toggle LAST
         if (target.closest('[data-action="toggleStep"]')) {
             toggleStep(Number(target.closest('[data-action="toggleStep"]').dataset.index));
             return;
@@ -149,6 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btn.id === 'btnPipeReset') restartPipeline();
             if (btn.id === 'btnFocusPrev') navFocus(-1);
             if (btn.id === 'btnFocusNext') navFocus(1);
+
+            if (btn.id === 'ui_btnResetQty') {
+                const mode = document.getElementById('mode').value;
+                document.getElementById('targetAmount').value = mode === 'stacks' ? 1 : 10000;
+                document.getElementById('targetAmount').dispatchEvent(new Event('input', { bubbles: true }));
+            }
         }
 
         if (target.closest('[data-action="clearSearch"]')) {
@@ -169,6 +220,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.closest('#btnReturnTop')) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
+        }
+
+        // Inside your DOMContentLoaded click listener
+        if (target.closest('.material-item-link')) {
+            const itemEl = target.closest('.material-item-link');
+            const itemKey = itemEl.dataset.key;
+            const itemName = itemEl.textContent.trim();
+
+            // 1. Close the Help/Materials modal
+            closeModal('helpModal');
+
+            // 2. Set as Target
+            const targetInput = document.getElementById('targetMetal');
+            const targetSearch = document.getElementById('targetMetalSearch');
+            const amountInput = document.getElementById('targetAmount');
+
+            if (targetInput) targetInput.value = itemKey;
+            if (targetSearch) targetSearch.value = itemName;
+            if (amountInput) amountInput.value = 10000; // Force 10,000 units
+
+            // 3. Trigger calculation
+            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
     });
 
@@ -211,8 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('input', (e) => {
         const target = e.target;
         if (['targetAmount', 'crafters'].includes(target.id)) {
-            // In lookup mode re-render the lookup cards with the new qty;
-            // otherwise let the normal pipeline calculate() run.
             if (isLookupMode()) refreshLookup();
             else calculate();
         }
@@ -234,10 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ============================================================================
-// 5. GLOBAL SCOPE EXPOSURE (CRITICAL FOR DYNAMIC HTML)
-// ============================================================================
-// toggleStep and updatePathChoice are still used via inline onclick in renderPipeline (app.js)
-// but mapping them here ensures fallback functionality if custom data-actions are missed
+// Expose these for any dynamically injected HTML strings that might still rely on them
 window.toggleStep = toggleStep;
 window.updatePathChoice = updatePathChoice;

@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Ara...",
     searchEmptyState: "Üretim detaylarını görmek için bir materyal arayın.",
     searchNotFound: "Bu isimde materyal bulunamadı.",
-    targetMetalLabel: "Hedef Materyal:"
+    targetMetalLabel: "Hedef Materyal:",
+    tabMaterials: "Materyaller",
+    tabLegend: "Gösterge",
+    modByproductsTitle: "Geri Kazanılan Yan Ürünler",
+    usesProducedFrom: "şundan üretilir:",
+    usesCanMake: "şunu yapmak için kullanılabilir:",
+    usesSetTarget: "Hedef olarak belirle",
+    usesNone: "Bilinen bir tarif veya kaynak yok:",
+    usesDetails: "Detaylar",
+    tabMaterials: "Materiaalit",
+    tabLegend: "Selite",
+    usesTitle: "Materiaalin tiedot",
+    btnClose: "Sulje",
+    modByproductsTitle: "Talteenotetut sivutuotteet",
+    usesProducedFrom: "valmistetaan:",
+    usesCanMake: "voidaan käyttää valmistamaan:",
+    usesSetTarget: "Aseta kohteeksi",
+    usesNone: "Ei tunnettuja reseptejä tai lähteitä"
 };

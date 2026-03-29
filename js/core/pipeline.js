@@ -1,7 +1,7 @@
 import { state, saveState } from '../state/store.js';
 import { i18n } from '../data/lang.js';
 import { showConfirm } from '../utils/confirm.js';
-import { updateLogisticsOnly } from './app.js'; // Imported logistics updater
+import { updateLogisticsOnly } from './app.js';
 
 const triggerRecalc = () => document.dispatchEvent(new CustomEvent('pipeline:changed'));
 
@@ -35,7 +35,7 @@ export function clearPipelineProgress() {
 export function handlePipelineChange() {
     clearPipelineProgress();
     saveState();
-    triggerRecalc(); // Recalculate everything
+    triggerRecalc();
 }
 
 export function updatePrefVisuals() {
@@ -102,6 +102,15 @@ export function updatePathChoice(e, stepKey, selectedRoute) {
     triggerRecalc();
 }
 
+export function updateSourceChoice(e, itemKey, selectedSource) {
+    if (e) e.stopPropagation();
+    clearPipelineProgress();
+    if (!state.userSourcePrefs) state.userSourcePrefs = {};
+    state.userSourcePrefs[itemKey] = selectedSource;
+    saveState();
+    triggerRecalc();
+}
+
 export function setPipelineView(mode) {
     state.pipelineViewMode = mode;
     document.getElementById('btnOverview').classList.toggle('active', mode === 'overview');
@@ -159,13 +168,16 @@ export function updatePipelineVisuals() {
         }
     });
 
-    let percent = state.pipelineStepsRaw.length === 0 ? 100 : Math.round((state.completedSteps.length / state.pipelineStepsRaw.length) * 100);
+    let percent = state.pipelineStepsRaw.length === 0 ? 0 : Math.round((state.completedSteps.length / state.pipelineStepsRaw.length) * 100);
     if (percent > 100) percent = 100;
 
     const progBar = document.getElementById('projectProgressBar');
     const progText = document.getElementById('projectProgressText');
 
-    let colorStr = percent === 100 ? 'var(--success)' : 'var(--accent)';
+    // Dynamic Color Calculation (0% Red -> 100% Green)
+    let hueVal = Math.max(0, Math.min(120, Math.round((percent / 100) * 120)));
+    let colorStr = state.pipelineStepsRaw.length > 0 ? `hsl(${hueVal}, 85%, 45%)` : 'transparent';
+    let textColor = state.pipelineStepsRaw.length > 0 ? `hsl(${hueVal}, 85%, 45%)` : 'var(--text)';
 
     if (progBar) {
         progBar.style.width = percent + '%';
@@ -173,7 +185,7 @@ export function updatePipelineVisuals() {
     }
     if (progText) {
         progText.innerText = `${percent}%`;
-        progText.style.color = colorStr;
+        progText.style.color = textColor;
         progText.style.fontWeight = 'bold';
         progText.style.fontSize = '12px';
     }
@@ -226,7 +238,7 @@ export function toggleStep(index) {
 
     updatePipelineVisuals();
     saveState();
-    updateLogisticsOnly(); // Instantly update missing components
+    updateLogisticsOnly();
 }
 
 export function restartPipeline() {
@@ -236,6 +248,6 @@ export function restartPipeline() {
         updatePipelineVisuals();
         if (state.pipelineViewMode === 'focus') updateFocusView();
         saveState();
-        updateLogisticsOnly(); // Instantly revert missing components
+        updateLogisticsOnly();
     });
 }

@@ -44,8 +44,15 @@ export function applyColors(fromLoad = false) {
 }
 
 export function resetColors() {
-    syncColorPickers();
-    saveState();
+    const isLight = document.body.classList.contains('light-theme');
+    const themeKey = isLight ? 'light' : 'dark';
+    const defs = defaultColors[themeKey];
+
+    if (document.getElementById('colorAccent')) document.getElementById('colorAccent').value = defs.accent;
+    if (document.getElementById('colorBg')) document.getElementById('colorBg').value = defs.bg;
+    if (document.getElementById('colorText')) document.getElementById('colorText').value = defs.text;
+
+    applyColors();
 }
 
 // FIXED: Added 'export' keyword so main.js can use it on boot

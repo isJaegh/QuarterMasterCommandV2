@@ -39,5 +39,22 @@ export default {
     searchPlaceholder: "Pesquisar...",
     searchEmptyState: "Pesquise um material para ver os detalhes de produção.",
     searchNotFound: "Nenhum material encontrado com esse nome.",
-    targetMetalLabel: "Material Alvo:"
+    targetMetalLabel: "Material Alvo:",
+    tabMaterials: "Materiais",
+    tabLegend: "Lenda",
+    modByproductsTitle: "Subprodutos Recuperados",
+    usesProducedFrom: "é produzido a partir de:",
+    usesCanMake: "pode ser usado para fazer:",
+    usesSetTarget: "Definir como alvo",
+    usesNone: "Nenhuma receita ou fonte conhecida para",
+    usesDetails: "Detalhes",
+    tabMaterials: "Materiais",
+    tabLegend: "Lenda",
+    usesTitle: "Detalhes do Material",
+    btnClose: "Fechar",
+    modByproductsTitle: "Subprodutos Recuperados",
+    usesProducedFrom: "é produzido a partir de:",
+    usesCanMake: "pode ser usado para fazer:",
+    usesSetTarget: "Definir como alvo",
+    usesNone: "Nenhuma receita ou fonte conhecida para"
 };

@@ -8,6 +8,9 @@ export const defaultPrices = {
 
 export const GATHERABLE_STONES = ['granum', 'calx', 'saburra', 'tephra', 'gabore', 'kimurite', 'lodestone', 'water'];
 
+// Items purchasable at the Magic Vendor (alternative source to extraction)
+export const VENDOR_ITEMS = new Set(['calamine', 'ichor', 'sulfur', 'rockoil']);
+
 // Items have been sorted alphabetically by their UI Display Names
 export const CATEGORIES = [
     { id: 'raw', items: ['calx', 'gabore', 'granum', 'kimurite', 'lodestone', 'saburra', 'tephra', 'water'] },
