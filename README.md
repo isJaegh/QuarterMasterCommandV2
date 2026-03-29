@@ -1,78 +1,37 @@
-# Quartermaster Command - MO2 Refining Suite
+# Quartermaster Command
 
-**Quartermaster Command** is a comprehensive, browser-based logistics and refining calculator built specifically for **Mortal Online 2**. Designed for dedicated crafters and guild quartermasters, it streamlines the complex process of metal refining, ore extraction, and resource management.
+**Quartermaster Command** is a comprehensive, client-side web application designed to calculate and manage crafting, refining, extraction, and logistics pipelines for Mortal Online 2 (MO2). 
 
-*Made by [MTM] Jaegh for the MERCATORUM guild.*
-*"Steel wins battles, silver wins wars"*
+Built to optimize resource management, this tool ensures you always know exactly what materials you need, what you already have, and what secondary resources you will generate along the way.
 
----
-
-## 🚀 Key Features
-
-### 1. Production Command & Manufacturing Pipeline
-* **Target Management:** Select an advanced target metal (e.g., Steel, Oghmium, Tungsteel, Cronite), input your desired quantity, and specify the number of crafters.
-* **Dynamic Pipeline:** The app automatically generates a step-by-step extraction and refining route using highly accurate, game-tested yield data.
-* **Route Optimization:** Toggle between **Efficient** (lowest overall material cost) and **Max Yield** (highest byproduct generation) paths. 
-* **Byproduct Tracking:** Calculates and totals all secondary materials (byproducts) generated during the extraction and refining processes.
-
-### 2. Inventory (Bank) & Market Cart
-* **Bank Management:** Input your current stash of raw materials, catalysts, and intermediate ores.
-* **Calculate Max Craftable:** A specialized calculator that evaluates your current bank and tells you the absolute maximum amount of your target resource you can craft *without* buying anything else.
-* **Market Cart:** Automatically calculates the exact missing components needed to reach your production goal. Features an **Auto-Fill** button to instantly add missing items to your shopping cart and calculate total costs.
-
-### 3. Guild Logistics & Discord Dispatch
-* **Discord Integration:** Hook up a Discord Webhook URL to instantly dispatch logistics orders directly to your guild's Discord server. Orders are neatly formatted to show missing components, market purchases, and gathering requirements.
-* **Share / Import Setups:** Generate a unique string code to share your current inventory, market cart, and target goals with other players, or paste a code to instantly load theirs.
-
-### 4. Customization & Accessibility
-* **Full Localization:** Translated into 16 languages (English, French, German, Spanish, Russian, Czech, and more).
-* **Theming:** Toggle between Dark Mode (Default) and Light Mode. Fully customizable Primary, Secondary, and Text colors to match your aesthetic.
-* **PWA Support:** Installable as a Progressive Web App (PWA) for a native, app-like experience on desktop or mobile.
+*"Steel wins battles, silver wins wars."*
 
 ---
 
-## 📊 Data Accuracy
-The extraction yields, catalyst requirements, and recipes are based on standard Mortal Online 2 refining data. It includes calculations for:
-* Proper Blast Furnace vs. standard Furnace smelting efficiencies.
-* Strict catalyst requirements for advanced metallurgy (e.g., Grain Steel, Steel, Messing, Bron).
-* Configurable skill modifiers (Mastery, Refining, and Extraction skills can be toggled to apply their respective +6% / +3% yield bonuses).
+## 🌟 Features
+
+* **Advanced Production Pipeline:** Select a target material and quantity to generate a step-by-step breakdown of the most efficient extraction and refining routes.
+* **Dynamic Inventory & Market Cart:** Track your current stash. The app automatically calculates the difference between your inventory and your production goals, building a "Market Cart" of missing components.
+* **Byproduct Tracking:** Accurately calculates total recovered byproducts across complex, multi-step refining chains.
+* **Discord Logistics Integration:** Automatically format and dispatch logistics orders (missing components and market purchases) directly to your guild's Discord server via Webhooks.
+* **Extensive Localization:** Fully translated into 16 languages, including English, French, German, Spanish, Italian, Arabic, Romanian, Polish, Portuguese, Russian, Finnish, Ukrainian, Hungarian, Turkish, Swedish, and Czech.
+* **Deep Personalization:** * Toggle between Light and Dark modes, or set completely custom UI colors.
+    * Configure Yield Modifiers (Mastery, Refining, Extraction bonuses).
+    * Customize Module Visibility to show only the tools you need.
+* **Mobile-Friendly:** Fully responsive design built to work seamlessly on desktops, tablets, and smartphones.
 
 ---
 
-## 🛠️ Tech Stack
-Quartermaster Command is built using lightweight, dependency-free web technologies:
-* **HTML5 / CSS3** (Custom responsive grid and modal system)
-* **Vanilla JavaScript (ES6 Modules)** (No React, Vue, or heavy frameworks)
-* **LocalStorage API** (Persistent state management without a backend database)
-* **Service Workers** (For PWA caching and offline capabilities)
+## 🚀 How to Run (Local Development)
 
----
+Quartermaster Command is a client-side application running on HTML, CSS, and Vanilla JavaScript. However, because it uses **ES6 Modules** (`import`/`export`) to keep the codebase clean and organized, modern web browsers will block the app from loading if you simply double-click the `index.html` file on your hard drive. 
 
-## 📥 Installation & Usage (Important)
+To run the app locally, you need to serve it through a lightweight local web server. Here are the easiest ways to do this:
 
-Because this application utilizes modern JavaScript ES6 Modules (`import`/`export`), **you cannot simply double-click the `index.html` file to run it.** Modern web browsers will block the scripts from loading over the `file:///` protocol due to CORS security policies.
-
-To run the app, you must serve it through a local web server. Here are the three easiest ways to do this:
-
-### Option A: Visual Studio Code (Recommended)
-1. Open the project folder in VS Code.
-2. Install the **"Live Server"** extension.
-3. Open `index.html` and click the **"Go Live"** button in the bottom right corner.
-
-### Option B: Python (Windows / Mac / Linux)
+### Option 1: Using Node.js (Recommended)
+If you have [Node.js](https://nodejs.org/) installed, a simple server script is included in the project.
 1. Open your terminal or command prompt.
-2. Navigate to the `QuartermasterCommand-main` folder.
-3. Run the following command: `python -m http.server 8000`
-4. Open your web browser and navigate to `http://localhost:8000`.
-
-### Option C: Node.js
-1. Open your terminal in the project folder.
-2. Run `npx http-server`.
-3. Open the provided `localhost` link in your browser.
-
----
-
-## 📝 License & Contributions
-This project was created for the Mortal Online 2 community. Feel free to fork, modify, and host your own versions for your respective guilds! 
-
-*Special thanks to the MO2 community data miners and testers who make tools like this possible.*
+2. Navigate to the project folder.
+3. Run the included server script:
+   ```bash
+   node serve-dev.js
